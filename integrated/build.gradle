@@ -1,0 +1,11 @@
+def packageName = 'socketx-integrated'
+
+dependencies {
+  testCompile project(':socketx-undertow')
+  testCompile project(':socketx-jetty')
+  testCompile project(':socketx-netty')
+}
+
+jar {
+  baseName packageName
+}

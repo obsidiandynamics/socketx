@@ -1,0 +1,9 @@
+def packageName = 'socketx-netty'
+
+dependencies {
+  compile project(':')
+}
+
+jar {
+  baseName packageName
+}

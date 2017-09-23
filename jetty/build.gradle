@@ -1,0 +1,9 @@
+def packageName = 'socketx-jetty'
+
+dependencies {
+  compile project(':')
+}
+
+jar {
+  baseName packageName
+}

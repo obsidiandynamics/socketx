@@ -1,0 +1,13 @@
+rootProject.name = 'socketx'
+
+include 'socketx-undertow'
+project(':socketx-undertow').projectDir = new File(settingsDir, 'undertow')
+
+include 'socketx-jetty'
+project(':socketx-jetty').projectDir = new File(settingsDir, 'jetty')
+
+include 'socketx-netty'
+project(':socketx-netty').projectDir = new File(settingsDir, 'netty')
+
+include 'socketx-integrated'
+project(':socketx-integrated').projectDir = new File(settingsDir, 'integrated')
