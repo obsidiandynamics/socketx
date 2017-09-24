@@ -146,7 +146,11 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     });
 
     for (XEndpoint endpoint : endpoints) {
+      // the remote address should still exist, even though the endpoint has been closed
       assertNotNull(endpoint.getRemoteAddress());
+      
+      // pinging a closed endpoint should do no harm
+      endpoint.sendPing();
     }
     
     SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
