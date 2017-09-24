@@ -18,7 +18,6 @@ final class WebSocketServerInitializer extends ChannelInitializer<SocketChannel>
   private final SslContext sslContext;
   private final NettyEndpointManager manager;
   private final int idleTimeoutMillis;
-  private final Object connectionLock = new Object();
 
   WebSocketServerInitializer(NettyEndpointManager manager, String path, 
                              SslContext sslContext, int idleTimeoutMillis) {
@@ -49,11 +48,7 @@ final class WebSocketServerInitializer extends ChannelInitializer<SocketChannel>
     pipeline.addLast(new WebSocketServerProtocolHandler(path, null, true) {
       @Override public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
-        synchronized (connectionLock) {
-          if (manager.get(ctx.channel().id()) == null) {
-            manager.createEndpoint(ctx);
-          }
-        }
+        manager.createEndpoint(ctx);
       }
       
       @Override protected void decode(ChannelHandlerContext ctx, WebSocketFrame frame, List<Object> out) throws Exception {
