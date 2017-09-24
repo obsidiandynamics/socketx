@@ -80,7 +80,7 @@ public final class HighWaterMarkTest extends BaseClientServerTest {
     
     SocketUtils.await().untilTrue(() -> ! server.getEndpointManager().getEndpoints().isEmpty());
 
-    final int messages = highWaterMark * 100;
+    final int messages = highWaterMark * 1000;
     final XSendCallback callback = Mockito.mock(XSendCallback.class);
     final int payloadLength = 8192;
     final String textPayload = BinaryUtils.randomHexString(payloadLength);
