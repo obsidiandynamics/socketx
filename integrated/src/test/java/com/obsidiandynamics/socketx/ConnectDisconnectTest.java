@@ -2,6 +2,8 @@ package com.obsidiandynamics.socketx;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.*;
 
@@ -88,6 +90,12 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     final XServerConfig serverConfig = getDefaultServerConfig(https)
         .withScanInterval(1);
     final Slf4jMockListener serverListener = createSlf4jMockListener(LOG, "s: ");
+    doAnswer(invocation -> {
+      final XEndpoint endpoint = (XEndpoint) invocation.getArguments()[0];
+      endpoint.setContext("testServerContext");
+      assertEquals("testServerContext", endpoint.getContext());
+      return null;
+    }).when(serverListener.mock).onConnect(notNull(XEndpoint.class));
     createServer(serverFactory, serverConfig, serverListener.loggingListener);
     assertNotNull(server.getConfig());
 
@@ -103,15 +111,15 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     for (int i = 0; i < connections; i++) {
       final int port = https ? serverConfig.httpsPort : serverConfig.port;
       final XEndpoint endpoint = openClientEndpoint(https, port, clientListener.loggingListener);
-      endpoint.setContext("testContext");
-      assertEquals("testContext", endpoint.getContext());
+      endpoint.setContext("testClientContext");
+      assertEquals("testClientContext", endpoint.getContext());
       endpoints.add(endpoint);
     }
 
     // assert connections on server
     SocketUtils.await().until(() -> {
-      Mockito.verify(clientListener.mock, Mockito.times(connections)).onConnect(Mockito.notNull(XEndpoint.class));
-      Mockito.verify(serverListener.mock, Mockito.times(connections)).onConnect(Mockito.notNull(XEndpoint.class));
+      verify(clientListener.mock, times(connections)).onConnect(notNull(XEndpoint.class));
+      verify(serverListener.mock, times(connections)).onConnect(notNull(XEndpoint.class));
     });
 
     // disconnect all endpoints and await closure
@@ -131,11 +139,15 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     
     // assert disconnections on server
     SocketUtils.await().until(() -> {
-      Mockito.verify(clientListener.mock, Mockito.times(connections)).onClose(Mockito.notNull(XEndpoint.class));
-      Mockito.verify(serverListener.mock, Mockito.times(connections)).onClose(Mockito.notNull(XEndpoint.class));
+      verify(clientListener.mock, times(connections)).onClose(notNull(XEndpoint.class));
+      verify(serverListener.mock, times(connections)).onClose(notNull(XEndpoint.class));
       TestCase.assertEquals(0, client.getEndpoints().size());
       TestCase.assertEquals(0, server.getEndpointManager().getEndpoints().size());
     });
+
+    for (XEndpoint endpoint : endpoints) {
+      assertNotNull(endpoint.getRemoteAddress());
+    }
     
     SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
   }

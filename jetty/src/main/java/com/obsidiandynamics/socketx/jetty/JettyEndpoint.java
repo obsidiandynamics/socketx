@@ -20,6 +20,8 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
   
   private volatile Object context;
   
+  private volatile InetSocketAddress remoteAddress;
+  
   private volatile long lastActivityTime;
 
   JettyEndpoint(JettyEndpointManager manager) {
@@ -48,6 +50,7 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
     super.onWebSocketConnect(session);
     manager.add(this);
     manager.getListener().onConnect(this);
+    remoteAddress = getRemote().getInetSocketAddress();
     touchLastActivityTime();
   }
 
@@ -169,8 +172,7 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
 
   @Override
   public InetSocketAddress getRemoteAddress() {
-    final RemoteEndpoint remote = getRemote();
-    return remote != null ? remote.getInetSocketAddress() : null;
+    return remoteAddress;
   }
 
   @Override
