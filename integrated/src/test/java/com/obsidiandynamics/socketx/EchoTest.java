@@ -75,16 +75,17 @@ public final class EchoTest extends BaseClientServerTest {
         endpoint.send("test", null);
         endpoint.send(toBuffer("test"), null);
       }
+      endpoint.flush();
     }
     
     // assert receival of echo on clients
     final int expected = connections * messages;
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       verify(clientListener, times(expected)).onText(notNull(XEndpoint.class), eq("test"));
       verify(clientListener, times(expected)).onBinary(notNull(XEndpoint.class), eq(toBuffer("test")));
     });
 
-    SocketTestSupport.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
+    SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
   }
   
   private static ByteBuffer toBuffer(String str) {

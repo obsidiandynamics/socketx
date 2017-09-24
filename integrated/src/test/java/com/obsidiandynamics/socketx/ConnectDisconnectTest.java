@@ -1,6 +1,7 @@
 package com.obsidiandynamics.socketx;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.*;
 
@@ -88,6 +89,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
         .withScanInterval(1);
     final Slf4jMockListener serverListener = createSlf4jMockListener(LOG, "s: ");
     createServer(serverFactory, serverConfig, serverListener.loggingListener);
+    assertNotNull(server.getConfig());
 
     final XClientConfig clientConfig = getDefaultClientConfig()
         .withScanInterval(1)
@@ -100,11 +102,14 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     // connect all endpoints
     for (int i = 0; i < connections; i++) {
       final int port = https ? serverConfig.httpsPort : serverConfig.port;
-      endpoints.add(openClientEndpoint(https, port, clientListener.loggingListener));
+      final XEndpoint endpoint = openClientEndpoint(https, port, clientListener.loggingListener);
+      endpoint.setContext("testContext");
+      assertEquals("testContext", endpoint.getContext());
+      endpoints.add(endpoint);
     }
 
     // assert connections on server
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(clientListener.mock, Mockito.times(connections)).onConnect(Mockito.notNull(XEndpoint.class));
       Mockito.verify(serverListener.mock, Mockito.times(connections)).onConnect(Mockito.notNull(XEndpoint.class));
     });
@@ -125,13 +130,13 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     }
     
     // assert disconnections on server
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(clientListener.mock, Mockito.times(connections)).onClose(Mockito.notNull(XEndpoint.class));
       Mockito.verify(serverListener.mock, Mockito.times(connections)).onClose(Mockito.notNull(XEndpoint.class));
       TestCase.assertEquals(0, client.getEndpoints().size());
       TestCase.assertEquals(0, server.getEndpointManager().getEndpoints().size());
     });
     
-    SocketTestSupport.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
+    SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
   }
 }

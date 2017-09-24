@@ -65,12 +65,12 @@ public final class IdleTimeoutTest extends BaseClientServerTest {
 
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     openClientEndpoint(false, serverConfig.port, clientListener);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(serverListener).onConnect(Mockito.notNull(XEndpoint.class));
       Mockito.verify(clientListener).onConnect(Mockito.notNull(XEndpoint.class));
     });
     
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(serverListener).onClose(Mockito.notNull(XEndpoint.class));
       Mockito.verify(clientListener).onClose(Mockito.notNull(XEndpoint.class));
     });
@@ -91,11 +91,11 @@ public final class IdleTimeoutTest extends BaseClientServerTest {
 
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     openClientEndpoint(false, serverConfig.port, clientListener);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(serverListener).onClose(Mockito.notNull(XEndpoint.class));
       Mockito.verify(clientListener).onClose(Mockito.notNull(XEndpoint.class));
     });
     
-    SocketTestSupport.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
+    SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
   }
 }

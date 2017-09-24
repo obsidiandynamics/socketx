@@ -99,6 +99,6 @@ public final class ServletTest extends BaseClientServerTest {
     final String responseStr = new String(responseBytes);
     assertEquals(SERVLET_RESPONSE, responseStr);
     
-    SocketTestSupport.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
+    SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
   }
 }

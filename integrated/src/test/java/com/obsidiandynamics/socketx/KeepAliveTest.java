@@ -55,12 +55,12 @@ public final class KeepAliveTest extends BaseClientServerTest {
 
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     openClientEndpoint(false, serverConfig.port, clientListener);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       verify(serverListener).onConnect(notNull(XEndpoint.class));
       verify(clientListener).onConnect(notNull(XEndpoint.class));
     });
     
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       verify(clientListener, atLeastOnce()).onPing(notNull(XEndpoint.class), notNull(ByteBuffer.class));
       verify(serverListener, atLeastOnce()).onPong(notNull(XEndpoint.class), notNull(ByteBuffer.class));
     });

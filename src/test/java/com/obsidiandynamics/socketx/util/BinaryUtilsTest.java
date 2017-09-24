@@ -48,4 +48,21 @@ public final class BinaryUtilsTest {
   public void testConformance() throws Exception {
     TestSupport.assertUtilityClassWellDefined(BinaryUtils.class);
   }
+  
+  @Test
+  public void testRandomBytes() {
+    final byte[] bytes = BinaryUtils.randomBytes(8);
+    assertEquals(8, bytes.length);
+  }
+  
+  @Test
+  public void testRandomHexString() {
+    final String str = BinaryUtils.randomHexString(8);
+    assertEquals(8, str.length());
+  }
+  
+  @Test(expected=IllegalArgumentException.class)
+  public void testRandomHexStringOddLength() {
+    BinaryUtils.randomHexString(7);
+  }
 }

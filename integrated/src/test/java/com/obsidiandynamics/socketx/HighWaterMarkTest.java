@@ -54,7 +54,7 @@ public final class HighWaterMarkTest extends BaseClientServerTest {
         });
     openClientEndpoint(false, serverConfig.port, clientListener);
     
-    SocketTestSupport.await().untilTrue(() -> ! server.getEndpointManager().getEndpoints().isEmpty());
+    SocketUtils.await().untilTrue(() -> ! server.getEndpointManager().getEndpoints().isEmpty());
 
     final int messages = highWaterMark * 100;
     for (XEndpoint endpoint : server.getEndpointManager().getEndpoints()) {

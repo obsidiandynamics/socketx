@@ -26,7 +26,7 @@ import com.obsidiandynamics.socketx.util.URIBuilder.*;
  *  Run with:
  *  -XX:-MaxFDLimit -XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark -XX:-UseBiasedLocking Xms1G -Xmx4G -Xss1M -XX:+UseParallelGC
  */
-public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
+public final class FanOutBenchmark implements TestSupport {
   private static final int PREFERRED_PORT = 8090;
   private static final int PREFERRED_HTTPS_PORT = 8543;
   private static final int BACKLOG_HWM = 100_000;
@@ -71,8 +71,8 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
     }
     
     SpecMultiplier assignDefaults() {
-      port = SocketTestSupport.getAvailablePort(PREFERRED_PORT);
-      httpsPort = SocketTestSupport.getAvailablePort(PREFERRED_HTTPS_PORT);
+      port = SocketUtils.getAvailablePort(PREFERRED_PORT);
+      httpsPort = SocketUtils.getAvailablePort(PREFERRED_HTTPS_PORT);
       https = false;
       idleTimeout = IDLE_TIMEOUT;
       n = 100;
@@ -349,12 +349,12 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
     }
 
     if (c.log.stages) c.log.out.format("s: awaiting server.connected\n");
-    SocketTestSupport.await().withScale(waitScale).until(() -> assertEquals(c.m, server.connected.get()));
+    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(c.m, server.connected.get()));
     
     assertEquals(c.m, totalConnected(clients));
 
-    final byte[] binPayload = c.text ? null : SocketTestSupport.randomBytes(c.bytes);
-    final String textPayload = c.text ? SocketTestSupport.randomString(c.bytes) : null;
+    final byte[] binPayload = c.text ? null : BinaryUtils.randomBytes(c.bytes);
+    final String textPayload = c.text ? BinaryUtils.randomHexString(c.bytes) : null;
     
     final List<XEndpoint> endpoints = server.getEndpoints();
 
@@ -416,7 +416,7 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
     checkpoint = System.currentTimeMillis();
     if (c.log.stages) c.log.out.format("s: awaiting server.sent\n");
     final long expectedReceive = (long) c.m * c.n;
-    SocketTestSupport.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, server.sent.get()));
+    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, server.sent.get()));
     if (c.log.stages) c.log.out.format("s: took %,d ms\n", System.currentTimeMillis() - checkpoint);
 
     checkpoint = System.currentTimeMillis();
@@ -441,7 +441,7 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
     if (c.echo) {
       checkpoint = System.currentTimeMillis();
       if (c.log.stages) c.log.out.format("s: awaiting client.sent (echo mode was enabled)\n");
-      SocketTestSupport.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, totalSent(clients)));
+      SocketUtils.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, totalSent(clients)));
       if (c.log.stages) c.log.out.format("s: took %,d ms\n", System.currentTimeMillis() - checkpoint);
     } else {
       assertEquals(0, totalSent(clients));
@@ -450,7 +450,7 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
     if (c.echo) {
       checkpoint = System.currentTimeMillis();
       if (c.log.stages) c.log.out.format("s: awaiting server.received (echo mode was enabled)\n");
-      SocketTestSupport.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, server.received.get()));
+      SocketUtils.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, server.received.get()));
       if (c.log.stages) c.log.out.format("s: took %,d ms\n", System.currentTimeMillis() - checkpoint);
     } else {
       assertEquals(0, server.received.get());
@@ -471,10 +471,10 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
     }
 
     if (c.log.stages) c.log.out.format("s: awaiting server.closed\n");
-    SocketTestSupport.await().withScale(waitScale).until(() -> assertEquals(c.m, server.closed.get()));
+    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(c.m, server.closed.get()));
 
     if (c.log.stages) c.log.out.format("s: awaiting client.closed\n");
-    SocketTestSupport.await().withScale(waitScale).until(() -> assertEquals(c.m, totalClosed(clients)));
+    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(c.m, totalClosed(clients)));
 
     server.close();
     return summary;
@@ -487,8 +487,8 @@ public final class FanOutBenchmark implements TestSupport, SocketTestSupport {
       new Config() {{
         serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
         clientHarnessFactory = clientHarnessFactory(client);
-        port = SocketTestSupport.getAvailablePort(PREFERRED_PORT);
-        httpsPort = SocketTestSupport.getAvailablePort(PREFERRED_HTTPS_PORT);
+        port = SocketUtils.getAvailablePort(PREFERRED_PORT);
+        httpsPort = SocketUtils.getAvailablePort(PREFERRED_HTTPS_PORT);
         https = false;
         idleTimeout = IDLE_TIMEOUT;
         n = 300_000;

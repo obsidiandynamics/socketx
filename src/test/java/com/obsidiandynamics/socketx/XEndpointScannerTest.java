@@ -37,7 +37,7 @@ public final class XEndpointScannerTest {
     final XEndpoint endpoint = mock(XEndpoint.class);
     when(endpoint.isOpen()).thenThrow(new RuntimeException("boom"));
     scanner.addEndpoint(endpoint);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       verify(endpoint, atLeastOnce()).isOpen();
     });
   }
@@ -51,7 +51,7 @@ public final class XEndpointScannerTest {
     scanner.addEndpoint(endpoint);
     TestSupport.sleep(10);
     isOpen.set(false);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       try {
         verify(endpoint, atLeastOnce()).terminate();
       } catch (IOException e) {
@@ -67,7 +67,7 @@ public final class XEndpointScannerTest {
     when(endpoint.isOpen()).thenReturn(true);
     when(endpoint.getLastActivityTime()).thenReturn(System.currentTimeMillis());
     scanner.addEndpoint(endpoint);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       verify(endpoint, atLeastOnce()).sendPing();
     });
   }

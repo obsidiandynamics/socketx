@@ -62,13 +62,13 @@ public final class AbruptCloseTest extends BaseClientServerTest {
 
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     final XEndpoint endpoint = openClientEndpoint(false, serverConfig.port, clientListener);
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(serverListener).onConnect(Mockito.notNull(XEndpoint.class));
       Mockito.verify(clientListener).onConnect(Mockito.notNull(XEndpoint.class));
     });
     
     endpoint.terminate();
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(serverListener).onClose(Mockito.notNull(XEndpoint.class));
       Mockito.verify(clientListener).onClose(Mockito.notNull(XEndpoint.class));
     });
@@ -88,11 +88,11 @@ public final class AbruptCloseTest extends BaseClientServerTest {
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     openClientEndpoint(false, serverConfig.port, clientListener);
     
-    SocketTestSupport.await().untilTrue(this::hasServerEndpoint);
+    SocketUtils.await().untilTrue(this::hasServerEndpoint);
     
     final XEndpoint endpoint = getServerEndpoint();
     endpoint.terminate();
-    SocketTestSupport.await().until(() -> {
+    SocketUtils.await().until(() -> {
       Mockito.verify(serverListener).onClose(Mockito.notNull(XEndpoint.class));
       Mockito.verify(clientListener).onClose(Mockito.notNull(XEndpoint.class));
     });

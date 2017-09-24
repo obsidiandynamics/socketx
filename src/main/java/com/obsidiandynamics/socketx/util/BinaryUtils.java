@@ -1,6 +1,7 @@
 package com.obsidiandynamics.socketx.util;
 
 import java.nio.*;
+import java.util.*;
 
 public final class BinaryUtils {
   private BinaryUtils() {}
@@ -50,5 +51,21 @@ public final class BinaryUtils {
   public static ByteBuffer toByteBuffer(int ... ints) {
     final byte[] bytes = toByteArray(ints);
     return ByteBuffer.wrap(bytes);
+  }
+  
+  public static byte[] randomBytes(int length) {
+    final byte[] bytes = new byte[length];
+    new Random().nextBytes(bytes);
+    return bytes;
+  }
+  
+  public static String randomHexString(int length) {
+    if (length % 2 != 0) throw new IllegalArgumentException("Length must be a multiple of 2");
+    final StringBuilder sb = new StringBuilder(length);
+    final byte[] bytes = randomBytes(length / 2);
+    for (int i = 0; i < bytes.length; i++) {
+      sb.append(toHex(bytes[i]));
+    }
+    return sb.toString();
   }
 }
