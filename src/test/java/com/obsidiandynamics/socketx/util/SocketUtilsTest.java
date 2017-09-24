@@ -42,7 +42,7 @@ public final class SocketUtilsTest {
   
   @Test
   public void executeSuccessTest() {
-    SocketUtils.execute("netstat -an");
+    SocketUtils.execute("netstat -n | wc -l");
   }
   
   @Test(expected=ProcessExecutionException.class)
