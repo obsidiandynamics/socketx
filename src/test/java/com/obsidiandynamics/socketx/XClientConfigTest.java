@@ -14,7 +14,11 @@ public final class XClientConfigTest {
 
   @Test
   public void testIdleTimout() {
-    assertEquals(1000, new XClientConfig().withIdleTimeout(1000).idleTimeoutMillis);
+    final XClientConfig config = new XClientConfig().withIdleTimeout(0);
+    assertFalse(config.hasIdleTimeout());
+    config.withIdleTimeout(1000);
+    assertEquals(1000, config.idleTimeoutMillis);
+    assertTrue(config.hasIdleTimeout());
   }
 
   @Test
