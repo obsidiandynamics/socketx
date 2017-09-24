@@ -2,6 +2,7 @@ def packageName = 'socketx-netty'
 
 dependencies {
   compile project(':')
+  compile 'io.netty:netty-all:4.1.15.Final'
 }
 
 jar {

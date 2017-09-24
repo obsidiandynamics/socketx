@@ -2,6 +2,10 @@ def packageName = 'socketx-undertow'
 
 dependencies {
   compile project(':')
+  compile 'io.undertow:undertow-core:1.4.20.Final'
+  compile 'io.undertow:undertow-websockets-jsr:1.4.20.Final'
+  
+  testCompile project(':').sourceSets.test.output
 }
 
 jar {

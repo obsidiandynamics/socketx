@@ -2,6 +2,8 @@ def packageName = 'socketx-jetty'
 
 dependencies {
   compile project(':')
+  compile 'org.eclipse.jetty.websocket:websocket-server:9.4.6.v20170531'
+  compile 'org.eclipse.jetty.websocket:websocket-client:9.4.6.v20170531'
 }
 
 jar {
