@@ -109,8 +109,6 @@ public final class HighWaterMarkTest extends BaseClientServerTest {
       }
     }
     
-    SocketUtils.await().until(() -> {
-      verify(callback, atLeastOnce()).onSkip(any(XEndpoint.class));
-    });
+    verify(callback, atLeastOnce()).onSkip(any(XEndpoint.class));
   }
 }
