@@ -176,6 +176,6 @@ public final class NettyEndpoint implements XEndpoint {
 
   @Override
   public String toString() {
-    return "NettyEndpoint [channel=" + handlerContext.channel() + ", lastActivity=" + getLastActivityZoned() + "]";
+    return "NettyEndpoint [remote=" + getRemoteAddress() + ", lastActivity=" + getLastActivityZoned() + "]";
   }
 }

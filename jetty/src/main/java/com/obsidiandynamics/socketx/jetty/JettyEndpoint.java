@@ -191,7 +191,7 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
 
   @Override
   public String toString() {
-    return "JettyEndpoint [session=" + getSession() + ", lastActivity=" + getLastActivityZoned() + "]";
+    return "JettyEndpoint [remote=" + getRemoteAddress() + ", lastActivity=" + getLastActivityZoned() + "]";
   }
 
   @Override
