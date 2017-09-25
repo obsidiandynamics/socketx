@@ -70,12 +70,16 @@ public final class EchoTest extends BaseClientServerTest {
     }
     
     // send one text and one binary frame over each client connection
-    for (XEndpoint endpoint : endpoints) {
+    for (XEndpoint clientEndpoint : endpoints) {
       for (int i = 0; i < messages; i++) {
-        endpoint.send("test", null);
-        endpoint.send(toBuffer("test"), null);
+        clientEndpoint.send("test", null);
+        clientEndpoint.send(toBuffer("test"), null);
       }
-      endpoint.flush();
+      clientEndpoint.flush();
+    }
+    
+    for (XEndpoint serverEndpoint : server.getEndpointManager().getEndpoints()) {
+      serverEndpoint.flush();
     }
     
     // assert receival of echo on clients
