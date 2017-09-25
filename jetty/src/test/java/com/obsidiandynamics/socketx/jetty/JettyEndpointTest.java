@@ -15,13 +15,13 @@ import org.junit.rules.*;
 import com.obsidiandynamics.socketx.*;
 
 /**
- *  Tests specific to {@link JettyEndpoint} that aren't covered by the integration
+ *  Tests specific to {@link JettyEndpoint}, beyond what is normally covered by the integration
  *  tests.
  */
 public final class JettyEndpointTest {
   private XEndpointScanner<JettyEndpoint> scanner;
   private JettyEndpoint endpoint;
-  XEndpointListener<JettyEndpoint> listener;
+  private XEndpointListener<JettyEndpoint> listener;
   
   @Rule 
   public ExpectedException exception = ExpectedException.none();
