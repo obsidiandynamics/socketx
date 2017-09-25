@@ -51,10 +51,14 @@ public final class AsserterTest {
   
   @Test
   public void testInterrupted() {
-    Asserter.wait(20).untilTrue(() -> {
-      Thread.currentThread().interrupt();
-      return false;
-    });
-    TestCase.assertTrue(Thread.interrupted());
+    try {
+      Asserter.wait(20).untilTrue(() -> {
+        Thread.currentThread().interrupt();
+        return false;
+      });
+    } catch (AssertionError ae) {
+    } finally {
+      TestCase.assertTrue(Thread.interrupted());
+    }
   }
 }
