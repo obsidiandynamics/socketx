@@ -4,7 +4,6 @@ dependencies {
   testCompile project(':socketx-undertow')
   testCompile project(':socketx-jetty')
   testCompile project(':socketx-netty')
-  testCompile project(':').sourceSets.test.output
   testCompile 'org.apache.httpcomponents:httpclient:4.5.3'
 }
 

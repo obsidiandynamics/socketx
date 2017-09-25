@@ -56,7 +56,11 @@ allprojects {
   }
 }
 
-subprojects {}
+subprojects {
+  dependencies {
+    testCompile project(':').sourceSets.test.output
+  }
+}
 
 task jacocoRootReport(type: JacocoReport) {
   dependsOn = allprojects.test
