@@ -25,8 +25,14 @@ import junit.framework.*;
 public final class ConnectDisconnectTest extends BaseClientServerTest {
   private static final Logger LOG = Mockito.mock(Logger.class);
   
+  private static final boolean ABRUPT = false;
+  private static final boolean GRACEFUL = true;
+  
   private static final boolean HTTP = false;
   private static final boolean HTTPS = true;
+  
+  private static final boolean CLIENT_DISCONNECT = false;
+  private static final boolean SERVER_DISCONNECT = true;
   
   private static final int CYCLES = 2;
   private static final int CONNECTIONS = 5;
@@ -39,44 +45,85 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
   }
   
   @Test
-  public void testJtJt() throws Exception {
-    test(true, CYCLES, CONNECTIONS, HTTP, JettyServer.factory(), JettyClient.factory());
-    test(false, CYCLES, CONNECTIONS, HTTP, JettyServer.factory(), JettyClient.factory());
+  public void testJtJtClientGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, CLIENT_DISCONNECT, JettyServer.factory(), JettyClient.factory());
+  }
+  
+  @Test
+  public void testJtJtClientAbruptDisconnect() throws Exception {
+    test(ABRUPT, CYCLES, CONNECTIONS, HTTP, CLIENT_DISCONNECT, JettyServer.factory(), JettyClient.factory());
+  }
+  
+  @Test
+  public void testJtJtServerGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, JettyServer.factory(), JettyClient.factory());
+  }
+  
+  @Test
+  public void testJtJtServerAbruptDisconnect() throws Exception {
+    test(ABRUPT, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, JettyServer.factory(), JettyClient.factory());
   }
 
   @Test
-  public void testJtJtHttps() throws Exception {
-    test(true, CYCLES, CONNECTIONS, HTTPS, JettyServer.factory(), JettyClient.factory());
+  public void testJtJtHttpsClientGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, JettyServer.factory(), JettyClient.factory());
   }
 
   @Test
-  public void testUtUt() throws Exception {
-    test(true, CYCLES, CONNECTIONS, HTTP, UndertowServer.factory(), UndertowClient.factory());
-    test(false, CYCLES, CONNECTIONS, HTTP, UndertowServer.factory(), UndertowClient.factory());
+  public void testUtUtClientGracefulDisconect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
   }
 
   @Test
-  public void testUtUtHttps() throws Exception {
-    test(true, CYCLES, CONNECTIONS, HTTPS, UndertowServer.factory(), UndertowClient.factory());
+  public void testUtUtClientAbruptDisconect() throws Exception {
+    test(ABRUPT, CYCLES, CONNECTIONS, HTTP, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
   }
 
   @Test
-  public void testNtUt() throws Exception {
-    test(true, CYCLES, CONNECTIONS, HTTP, NettyServer.factory(), UndertowClient.factory());
-    test(false, CYCLES, CONNECTIONS, HTTP, NettyServer.factory(), UndertowClient.factory());
+  public void testUtUtServerGracefulDisconect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
   }
 
   @Test
-  public void testNtUtHttps() throws Exception {
-    test(true, CYCLES, CONNECTIONS, HTTPS, NettyServer.factory(), UndertowClient.factory());
+  public void testUtUtServerAbruptDisconect() throws Exception {
+    test(ABRUPT, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
   }
 
-  private void test(boolean clean, int cycles, int connections, boolean https,
+  @Test
+  public void testUtUtHttpsClientGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
+  }
+
+  @Test
+  public void testNtUtClientGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, CLIENT_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
+  }
+
+  @Test
+  public void testNtUtClientAbruptDisconnect() throws Exception {
+    test(ABRUPT, CYCLES, CONNECTIONS, HTTP, CLIENT_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
+  }
+
+  @Test
+  public void testNtUtHttpsClientGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
+  }
+
+  @Test
+  public void testNtUtServerGracefulDisconnect() throws Exception {
+    test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
+  }
+  @Test
+  public void testNtUtServerAbruptDisconnect() throws Exception {
+    test(ABRUPT, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
+  }
+
+  private void test(boolean clean, int cycles, int connections, boolean https, boolean serverDisconnect,
                     XServerFactory<? extends XEndpoint> serverFactory,
                     XClientFactory<? extends XEndpoint> clientFactory) throws Exception {
     for (int cycle = 0; cycle < cycles; cycle++) {
       if (cycle != 0) init();
-      test(clean, connections, https, serverFactory, clientFactory);
+      test(clean, connections, https, serverDisconnect, serverFactory, clientFactory);
       dispose();
       if (PROGRESS_INTERVAL != 0 && cycle % PROGRESS_INTERVAL == PROGRESS_INTERVAL - 1) {
         LOG_STREAM.format("cycle %,d\n", cycle);
@@ -84,7 +131,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     }
   }
 
-  private void test(boolean clean, int connections, boolean https,
+  private void test(boolean clean, int connections, boolean https, boolean serverDisconnect,
                     XServerFactory<? extends XEndpoint> serverFactory,
                     XClientFactory<? extends XEndpoint> clientFactory) throws Exception {
     final XServerConfig serverConfig = getDefaultServerConfig(https)
@@ -121,9 +168,12 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       verify(clientListener.mock, times(connections)).onConnect(notNull(XEndpoint.class));
       verify(serverListener.mock, times(connections)).onConnect(notNull(XEndpoint.class));
     });
+    
+    final Collection<? extends XEndpoint> toDisconnect = serverDisconnect 
+        ? server.getEndpointManager().getEndpoints() : endpoints;
 
     // disconnect all endpoints and await closure
-    for (XEndpoint endpoint : endpoints) {
+    for (XEndpoint endpoint : toDisconnect) {
       if (clean) {
         endpoint.close();
         endpoint.close(); // second close() should do no harm, and shouldn't call the handler a second time
@@ -133,7 +183,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       }
     }
     
-    for (XEndpoint endpoint : endpoints) {
+    for (XEndpoint endpoint : toDisconnect) {
       endpoint.awaitClose(Integer.MAX_VALUE);
     }
     
