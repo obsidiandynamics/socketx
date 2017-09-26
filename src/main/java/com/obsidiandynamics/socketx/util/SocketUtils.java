@@ -54,7 +54,7 @@ public final class SocketUtils {
   }
   
   public static int getPortUseCount(int port) {
-    return Integer.parseInt(execute(String.format("netstat -an | grep %d | wc -l", port)).trim());
+    return Integer.parseInt(execute(String.format("netstat -an | grep \"[\\.|:]%d \" | wc -l", port)).trim());
   }
   
   public static final class ProcessExecutionException extends RuntimeException {

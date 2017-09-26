@@ -77,7 +77,7 @@ public final class SocketUtilsTest {
   }
   
   @Test
-  public void testDrainPort() throws IOException, InterruptedException, BrokenBarrierException {
+  public void testUseCountAndDrainPort() throws IOException, InterruptedException, BrokenBarrierException {
     final int port = port();
     openSocket(port);
     final CyclicBarrier barrier = new CyclicBarrier(2);
@@ -90,6 +90,8 @@ public final class SocketUtilsTest {
         e.printStackTrace();
       }
     }).start();
+    final int useCount = SocketUtils.getPortUseCount(port);
+    assertTrue("useCount=" + useCount, useCount > 0);
     barrier.await();
     SocketUtils.drainPort(port, 0, 1);
     SocketUtils.drainPort(port, 0); // second call should do nothing
