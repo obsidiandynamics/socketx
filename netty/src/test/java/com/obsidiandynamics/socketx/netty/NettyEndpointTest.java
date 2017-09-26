@@ -82,7 +82,7 @@ public final class NettyEndpointTest {
     assertNotNull(endpoint.getHandlerContext());
     
     final ChannelFuture f = mock(ChannelFuture.class);
-    when(channel.writeAndFlush(notNull(TextWebSocketFrame.class))).thenReturn(f);
+    when(channel.writeAndFlush(isA(TextWebSocketFrame.class))).thenReturn(f);
     final Throwable cause = new IOException("Boom");
     when(f.isSuccess()).thenReturn(false);
     when(f.cause()).thenReturn(cause);
