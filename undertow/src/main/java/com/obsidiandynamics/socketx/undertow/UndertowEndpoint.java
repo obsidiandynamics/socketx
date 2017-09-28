@@ -112,7 +112,7 @@ public final class UndertowEndpoint extends AbstractReceiveListener implements X
     }
   }
   
-  private WebSocketCallback<Void> wrapCallback(XSendCallback callback) {
+  WebSocketCallback<Void> wrapCallback(XSendCallback callback) {
     return new WebSocketCallback<Void>() {
       private final AtomicBoolean onceOnly = new AtomicBoolean();
       

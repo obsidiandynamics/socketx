@@ -12,6 +12,7 @@ import org.junit.rules.*;
 import org.xnio.*;
 
 import com.obsidiandynamics.socketx.*;
+import com.obsidiandynamics.socketx.util.*;
 
 import io.undertow.connector.*;
 import io.undertow.websockets.core.*;
@@ -100,5 +101,50 @@ public final class UndertowEndpointTest {
     when(channel.isOpen()).thenReturn(false);
     endpoint.onError(channel, cause);
     verify(listener, times(0)).onError(eq(endpoint), eq(cause));
+  }
+  
+  @Test
+  public void testCallbackOnceOnlyComplete() {
+    createEndpointManager();
+    
+    final XSendCallback callback = mock(XSendCallback.class);
+    final WebSocketCallback<Void> wsCallback = endpoint.wrapCallback(callback);
+    wsCallback.complete(channel, null);
+    verify(callback, times(1)).onComplete(eq(endpoint));
+    wsCallback.complete(channel, null);
+    verify(callback, times(1)).onComplete(eq(endpoint));
+  }
+  
+  @Test
+  public void testCallbackOnceOnlyError() {
+    createEndpointManager();
+    
+    final XSendCallback callback = mock(XSendCallback.class);
+    final WebSocketCallback<Void> wsCallback = endpoint.wrapCallback(callback);
+    final Throwable cause = new IOException("Boom");
+    wsCallback.onError(channel, null, cause);
+    verify(callback, times(1)).onError(eq(endpoint), eq(cause));
+    wsCallback.onError(channel, null, cause);
+    verify(callback, times(1)).onError(eq(endpoint), eq(cause));
+  }
+  
+  @Test
+  public void testTerminateChannelAndFireEvent() throws IOException {
+    createEndpointManager();
+
+    final Throwable cause = new IOException("Boom");
+    doThrow(cause).when(channel).close();
+    when(channel.isOpen()).thenReturn(true);
+    final XnioIoThread thread = mock(XnioIoThread.class);
+    doAnswer(invocation -> {
+      final Runnable runnable = (Runnable) invocation.getArguments()[0];
+      runnable.run();
+      return null;
+    }).when(thread).execute(any(Runnable.class));
+    when(channel.getIoThread()).thenReturn(thread);
+    endpoint.terminate();
+    SocketUtils.await().until(() -> {
+      verify(listener, times(1)).onClose(eq(endpoint));
+    });
   }
 }
