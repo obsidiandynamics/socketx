@@ -41,6 +41,7 @@ public final class Echo {
                  }));
     
     clientEndpoint.send("Hello from client");
+    
     client.drain();
     client.close();
     server.close();
