@@ -35,7 +35,7 @@ public final class JettyEndpointTest {
   }
   
   @SuppressWarnings("unchecked")
-  private void createEndpointManager() {
+  private void createFixtures() {
     listener = mock(XEndpointListener.class);
     scanner = new XEndpointScanner<>(1, 1000);
     final JettyEndpointManager manager = new JettyEndpointManager(scanner, 1000, new DerivedEndpointConfig(), listener);
@@ -44,7 +44,7 @@ public final class JettyEndpointTest {
   
   @Test
   public void testSendError() {
-    createEndpointManager();
+    createFixtures();
     
     final Session session = mock(Session.class);
     final RemoteEndpoint remote = mock(RemoteEndpoint.class);
@@ -69,7 +69,7 @@ public final class JettyEndpointTest {
   
   @Test
   public void testOnWebSocketErrorConnected() {
-    createEndpointManager();
+    createFixtures();
 
     final Session session = mock(Session.class);
     final RemoteEndpoint remote = mock(RemoteEndpoint.class);
@@ -84,7 +84,7 @@ public final class JettyEndpointTest {
   
   @Test
   public void testOnWebSocketErrorDisconnected() {
-    createEndpointManager();
+    createFixtures();
 
     final Session session = mock(Session.class);
     final RemoteEndpoint remote = mock(RemoteEndpoint.class);
@@ -99,7 +99,7 @@ public final class JettyEndpointTest {
   
   @Test
   public void testSendPingError() throws IOException {
-    createEndpointManager();
+    createFixtures();
 
     final Session session = mock(Session.class);
     final RemoteEndpoint remote = mock(RemoteEndpoint.class);
@@ -113,5 +113,37 @@ public final class JettyEndpointTest {
     exception.expect(RuntimeException.class);
     exception.expectCause(Matchers.equalTo(cause));
     endpoint.sendPing();
+  }
+  
+  @Test
+  public void testCloseAndTerminateWithoutSession() throws IOException {
+    createFixtures();
+    
+    endpoint.close();
+    endpoint.terminate();
+  }
+  
+  @Test
+  public void testCloseAndTerminateWhileClosed() throws IOException {
+    createFixtures();
+    
+    final Session session = mock(Session.class);
+    final RemoteEndpoint remote = mock(RemoteEndpoint.class);
+    when(session.getRemote()).thenReturn(remote);
+    endpoint.onWebSocketConnect(session);
+    endpoint.close();
+    endpoint.terminate();
+  }
+  
+  @Test
+  public void testTerminateWhileOpen() throws IOException {
+    createFixtures();
+    
+    final Session session = mock(Session.class);
+    final RemoteEndpoint remote = mock(RemoteEndpoint.class);
+    when(session.getRemote()).thenReturn(remote);
+    when(session.isOpen()).thenReturn(true);
+    endpoint.onWebSocketConnect(session);
+    endpoint.terminate();
   }
 }
