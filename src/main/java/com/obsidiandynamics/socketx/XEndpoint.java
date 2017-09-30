@@ -30,9 +30,27 @@ public interface XEndpoint extends AutoCloseable {
    *  Asynchronously sends a text frame.
    *  
    *  @param payload The payload.
+   */
+  default void send(String payload) {
+    send(payload, null);
+  }
+  
+  /**
+   *  Asynchronously sends a text frame.
+   *  
+   *  @param payload The payload.
    *  @param callback Optional callback, invoked when the send completes (or fails).
    */
   void send(String payload, XSendCallback callback);
+  
+  /**
+   *  Asynchronously sends a binary frame.
+   *  
+   *  @param payload The payload.
+   */
+  default void send(ByteBuffer payload) {
+    send(payload, null);
+  }
 
   /**
    *  Asynchronously sends a binary frame.

@@ -187,6 +187,9 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       endpoint.awaitClose(Integer.MAX_VALUE);
     }
     
+    server.drain();
+    client.drain();
+    
     // assert disconnections on server
     SocketUtils.await().until(() -> {
       verify(clientListener.mock, times(connections)).onClose(notNull(XEndpoint.class));

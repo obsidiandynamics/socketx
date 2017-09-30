@@ -54,8 +54,8 @@ public final class EchoTest extends BaseClientServerTest {
     final XServerConfig serverConfig = getDefaultServerConfig(false)
         .withScanInterval(1);
     final XEndpointListener<XEndpoint> serverListener = new XEndpointLambdaListener<>()
-        .onText((endpoint, message) -> endpoint.send(message, null))
-        .onBinary((endpoint, message) -> endpoint.send(message, null));
+        .onText((endpoint, message) -> endpoint.send(message))
+        .onBinary((endpoint, message) -> endpoint.send(message));
     createServer(serverFactory, serverConfig, serverListener);
 
     final XClientConfig clientConfig = getDefaultClientConfig()
@@ -72,8 +72,8 @@ public final class EchoTest extends BaseClientServerTest {
     // send one text and one binary frame over each client connection
     for (XEndpoint clientEndpoint : endpoints) {
       for (int i = 0; i < messages; i++) {
-        clientEndpoint.send("test", null);
-        clientEndpoint.send(toBuffer("test"), null);
+        clientEndpoint.send("test");
+        clientEndpoint.send(toBuffer("test"));
       }
       clientEndpoint.flush();
     }
