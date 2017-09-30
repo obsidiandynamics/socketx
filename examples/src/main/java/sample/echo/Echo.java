@@ -13,12 +13,12 @@ public final class Echo {
                 .withPath("/echo")
                 .withPort(8080), 
                 new XEndpointLambdaListener<>()
-                .onConnect(e -> { 
-                  System.out.format("Server: connected %s\n", e); 
+                .onConnect(endpoint -> { 
+                  System.out.format("Server: connected %s\n", endpoint); 
                 })
-                .onText((e, message) -> {
+                .onText((endpoint, message) -> {
                   System.out.format("Server: received '%s'\n", message);
-                  e.send("Hello reply from server");
+                  endpoint.send("Hello reply from server");
                 }));
 
     final XClient<?> client = UndertowClient
@@ -28,16 +28,16 @@ public final class Echo {
     final XEndpoint clientEndpoint = client
         .connect(new URI("ws://localhost:8080/echo"),
                  new XEndpointLambdaListener<>()
-                 .onConnect(e -> { 
-                   System.out.format("Client: connected %s\n", e); 
+                 .onConnect(endpoint -> { 
+                   System.out.format("Client: connected %s\n", endpoint); 
                  })
-                 .onText((e, message) -> {
+                 .onText((endpoint, message) -> {
                    System.out.format("Client: received '%s'\n", message);
                    try {
-                    e.close();
-                  } catch (Exception ex) {
-                    ex.printStackTrace();
-                  }
+                     endpoint.close();
+                   } catch (Exception e) {
+                     e.printStackTrace();
+                   }
                  }));
     
     clientEndpoint.send("Hello from client");
