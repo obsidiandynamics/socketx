@@ -23,13 +23,13 @@ public final class JKSTest {
   @Test
   public void testCreateSSLContext() throws Exception {
     final KeyStore keyStore = JKS
-        .loadKeyStore(ResourceLocator.asStream(new URI("cp://keystore.jks")), "storepass");
+        .loadKeyStore(ResourceLocator.asStream(new URI("cp://keystore-dev.jks")), "storepass");
     final SSLContext sslContext = JKS.createSSLContext(keyStore, "keypass", keyStore);
     assertNotNull(sslContext);
   }
   
   @Test(expected=IOException.class)
   public void testLoadKeyStoreWrongPassword() throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException, URISyntaxException {
-    JKS.loadKeyStore(ResourceLocator.asStream(new URI("cp://keystore.jks")), "badpass");
+    JKS.loadKeyStore(ResourceLocator.asStream(new URI("cp://keystore-dev.jks")), "badpass");
   }
 }

@@ -73,7 +73,7 @@ public final class SSLContextProvidersTest {
   @Test
   public void testJKSKey() throws Exception {
     final JKSKeyManagerProvider keyProvider = new JKSKeyManagerProvider()
-        .withLocation("cp://keystore.jks")
+        .withLocation("cp://keystore-dev.jks")
         .withStorePassword("storepass")
         .withKeyPassword("keypass");
     assertNotNull(keyProvider.getKeyManagers());
@@ -83,7 +83,7 @@ public final class SSLContextProvidersTest {
   @Test
   public void testJKSTrust() throws Exception {
     final JKSTrustManagerProvider trustProvider = new JKSTrustManagerProvider()
-        .withLocation("cp://keystore.jks")
+        .withLocation("cp://keystore-dev.jks")
         .withStorePassword("storepass");
     assertNotNull(trustProvider.getTrustManagers());
     TestSupport.assertToString(trustProvider);

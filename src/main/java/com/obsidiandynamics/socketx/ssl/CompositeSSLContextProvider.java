@@ -37,17 +37,32 @@ public class CompositeSSLContextProvider implements SSLContextProvider {
         + trustManagerProvider + "]";
   }
 
+  /**
+   *  Provides server defaults suitable for a development environment based on a self-signed certificate.<p>
+   *  
+   *  Uses a self-signed certificate for serving HTTPS content. The keystore is generated using the following
+   *  command and placed in {@code src/main/resources}:<br/>
+   *  {@code keytool -genkeypair -keyalg RSA -keysize 4096 -keystore keystore-dev.jks -keypass keypass -storepass storepass -validity 99999}
+   *  
+   *  @return An SSL context provider for a dev server.
+   */
   public static CompositeSSLContextProvider getDevServerDefault() {
     return new CompositeSSLContextProvider()
         .withKeyManagerProvider(new JKSKeyManagerProvider()
-                                .withLocation("cp://keystore.jks")
+                                .withLocation("cp://keystore-dev.jks")
                                 .withStorePassword("storepass")
                                 .withKeyPassword("keypass"))
         .withTrustManagerProvider(new JKSTrustManagerProvider()
-                                  .withLocation("cp://keystore.jks")
+                                  .withLocation("cp://keystore-dev.jks")
                                   .withStorePassword("storepass"));
   }
   
+  /**
+   *  Provides client defaults suitable for a development environment based a lenient trust manager -
+   *  accepting <em>any</em> certificate offered by the server.
+   *  
+   *  @return An SSL context provider for a dev client.
+   */
   public static CompositeSSLContextProvider getDevClientDefault() {
     return new CompositeSSLContextProvider()
         .withTrustManagerProvider(new LenientX509TrustManagerProvider());

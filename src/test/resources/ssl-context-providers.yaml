@@ -15,10 +15,10 @@
 - type: com.obsidiandynamics.socketx.ssl.CompositeSSLContextProvider
   keyManagerProvider:
     type: com.obsidiandynamics.socketx.ssl.JKSKeyManagerProvider
-    location: cp://keystore.jks
+    location: cp://keystore-dev.jks
     storePassword: storepass
     keyPassword: keypass
   trustManagerProvider:
     type: com.obsidiandynamics.socketx.ssl.JKSTrustManagerProvider
-    location: cp://keystore.jks
+    location: cp://keystore-dev.jks
     storePassword: storepass
