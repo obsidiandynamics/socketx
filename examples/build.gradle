@@ -1,0 +1,9 @@
+def packageName = 'socketx-examples'
+
+dependencies {
+  compile project(':socketx-undertow')
+}
+
+jar {
+  baseName packageName
+}

@@ -11,3 +11,6 @@ project(':socketx-netty').projectDir = new File(settingsDir, 'netty')
 
 include 'socketx-integrated'
 project(':socketx-integrated').projectDir = new File(settingsDir, 'integrated')
+
+include 'socketx-examples'
+project(':socketx-examples').projectDir = new File(settingsDir, 'examples')
