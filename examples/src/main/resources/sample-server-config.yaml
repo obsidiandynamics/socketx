@@ -1,0 +1,9 @@
+port: 8080
+path: /echo
+idleTimeoutMillis: 300000
+pingIntervalMillis: 60000
+scanIntervalMillis: 1000
+highWaterMark: 1000
+attributes:
+  socketx.undertow.ioThreads: 8
+  socketx.undertow.bufferSize: 65536

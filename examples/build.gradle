@@ -2,6 +2,7 @@ def packageName = 'socketx-examples'
 
 dependencies {
   compile project(':socketx-undertow')
+  compile 'com.obsidiandynamics.yconf:yconf-snakeyaml:0.2.1'
 }
 
 jar {
