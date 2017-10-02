@@ -225,7 +225,7 @@ Sometimes, especially while developing, we may want to trust _all_ server certif
 
 **Note:** At present, Socket.x only supports server authentication, as this is the dominant use case. Client authentication may be added in later versions.
 
-**Note:** SSL configuration applies to _both_ WebSocket and conventional HTTP traffic. In other words, the same `SSLContext` can be used to encrypt not only WSS, but also HTTPS endpoints. This is useful when publishing [Servlets](#user-content-servlets).
+**Note:** SSL configuration applies to _both_ WebSocket and conventional HTTP traffic. In other words, the same `SSLContext` can be used to encrypt not only WSS, but also HTTPS endpoints. This is useful when publishing [Servlets](#user-content-servlet-support).
 
 ## Provider-specific configuration
 Among the chief challenges of developing a provider-neutral WebSocket API is dealing with the edge cases, where one provider may offer something over another that isn't necessarily prescribed in the [WebSocket RFC](https://tools.ietf.org/html/rfc6455), or isn't a mandatory aspect of the protocol. An example could be the use of frame compression, multiplexing/channels or some other extension of the protocol. Alternatively, it may be some non-functional aspect of the implementation, such as the number of threads used for I/O, whether direct buffers should be used, or the underlying TCP socket (`SO_xxx`) options. There simply isn't a way of using a common set of configuration objects and a fixed set of attributes to define provider-specific configuration, without heading down the dark alley of denormalisation.
