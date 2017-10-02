@@ -4,8 +4,13 @@ import java.util.concurrent.*;
 import java.util.function.*;
 
 /**
- *  Utility for awaiting a specific condition. Unlike Awaitility, this implementation
- *  is robust in the face of non-monotonically increasing clocks.
+ *  Utility for awaiting a specific condition. The utility methods block the calling thread until a 
+ *  certain condition, described by the specified {@link BooleanSupplier} evaluates to {@code true}.<p>
+ *  
+ *  There are variations of the blocking methods - some return a {@code boolean}, indicating whether 
+ *  the condition has been satisfied with the allotted time frame, while others throw a 
+ *  {@link TimeoutException}. You can specify an upper bound on how long to wait for, as well as the 
+ *  checking interval (which otherwise defaults to 1 ms). All times are in milliseconds.
  */
 public final class Await {
   public static final int DEF_INTERVAL = 1;

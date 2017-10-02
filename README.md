@@ -362,11 +362,14 @@ The `XEndpointListener` has a pair of life-cycle methods - `onDisconnect(E endpo
 If you need to handle the end-state of the connection, with no regard for the close status code or reason, implementing `onClose()` is sufficient, as this will handle both cases.
 
 ## Utilities
-Socket.x comes with a couple of utility classes that can come in very handy when working with not only WebSockets, but other sockets and protocols in general.
+Socket.x comes with a couple of utility classes that can come in handy when working with not only WebSockets, but other network sockets, protocols and I/O in general. It is expected that, over time, some of these utilities will be extracted out of Socket.x and turned into miniature libraries in their own right.
 
-### `Asserter`
+### `Timesert` and `Await`
+These two utilities are often used together. `Await`'s methods block the calling thread until a certain condition, described by the specified `BooleanSupplier` evaluates to `true`. There are variations of the blocking methods - some return a `boolean`, indicating whether the condition has been satisfied with the allotted time frame, while others throw a `TimeoutException`. You can specify an upper bound on how long to wait for, as well as the checking interval (which otherwise defaults to 1 ms).  All times accepted by any of the methods are in milliseconds.
 
-### `Await`
+`Timesert` is a wrapper around `Await` that's useful for testing assertions and works well with frameworks such as JUnit and TestNG. You might notice that it's strikingly similar to Awaitility; however, `Timesert` is significantly more efficient and doesn't suffer from a subtle problem that has been shown to adversely affect Awaitility - a system clock that isn't monotonically non-decreasing. (While rare, this condition can happen when using NTP, and is particularly problematic on macOS.) `Timesert` is robust to negative clock drift. Having migrated all test cases (hundreds of them) from Awaitility to Timesert, we've noticed significantly higher CPU utilisation of unit tests (about 50% higher than baseline) and a corresponding reduction time in builds by about 30%.
+
+`Await` and `Timesert` are useful when writing and testing network applications, as events don't happen instantly. For example, when sending a message you might want to assert that it has been received. But running an assertion on the receiver immediately following a send in an asynchronous environment will likely fail. Using `Timesert` allows for assertions to fail up to a certain point, after which the `AssertionError` is percolated to the caller and the test case fails. This way `Timesert` allows you to write efficient, reproducible assertions without resorting to `Thread.sleep()`.
 
 ### `BinaryUtils`
 

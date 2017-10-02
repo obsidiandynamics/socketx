@@ -18,8 +18,8 @@ public final class SocketUtils {
   
   private SocketUtils() {}
   
-  public static Asserter await() {
-    return Asserter.wait(DEF_AWAIT_MILLIS);
+  public static Timesert await() {
+    return Timesert.wait(DEF_AWAIT_MILLIS);
   }
   
   public static final class NoAvailablePortsException extends RuntimeException {
