@@ -385,10 +385,22 @@ Loads a specified resource URI as an `InputStream`. The URI can be of the form `
 Utilities for working with TCP sockets. Notable methods include -
 
 * `getAvailablePort(int preferredPort, int maxPort)` - searches for free (unbound) ports on the local machine, starting with the `preferredPort`, and up to the `maxPort`, inclusive. This method returns the first available port in the given range if one was found in a single complete pass. Alternatively, a `NoAvailablePortsException` unchecked exception is thrown if no unbound ports are available. Typically, this method is used when you need a spare port to bind to and where your application may have a preference for a specific port, but can still function correctly if a different port is assigned. This is often the case for testing scenarios.
-* `isLocalPortAvailable(int port)` - tests whether a single port is bound on the local machine. Behind the scenes, the method attempts to bind on the port and, if successful, sets the `SO_REUSEADDR` socket option before yielding the port, so that it may be used immediately.
+* `isLocalPortAvailable(int port)` - tests whether the given port is bound on the local machine. Behind the scenes, the method attempts to bind on the port and, if successful, sets the `SO_REUSEADDR` socket option before yielding the port, so that it may be used immediately.
 * `getPortUseCount(int port)` - used to query the number of uses of a given port, including the number of open socket connections, sockets in a `CLOSE_WAIT` state, as well as `LISTEN`. Effectively, this method counts the number of times a port appears in the output of a `netstat` command. Presently, this method relies on system utilities `netstat`, `grep` and `wc`, and can therefore only be used on a *NIX operating system, such as Linux, BSD, macOS, etc.
+* `drainPort(int port, int maxUseCount, int drainIntervalMillis)` - blocks the calling thread until the number of uses of the given port reaches or drops below `maxUseCount`, effectively draining the port of open connections. The `drainIntervalMillis` parameter introduces waits between successive checks.
 
 ### `URIBuilder`
+A fluent builder creating `URI` objects. The following snippet demonstrates its use:
+```java
+URI uri = URIBuilder.create()
+    .withWebSocket(true)
+    .withHttps(true)
+    .withHost("pound")
+    .withPath("/dog")
+    .withPortProvider(getPorts())
+    .build();
+// produces 'wss://pound:8443/dog'
+```
 
 
 # Applications using Socket.x
