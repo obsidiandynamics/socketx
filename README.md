@@ -223,6 +223,8 @@ Sometimes, especially while developing, we may want to trust all server certific
 
 **Note:** At present, Socket.x only supports server authentication, as this is the dominant use case. Client authentication may be added in later versions.
 
+**Note:** SSL configuration applies to _both_ WebSocket and conventional HTTP traffic. In other words, the same `SSLContext` can be used to encrypt not only WSS, but also HTTPS endpoints. This is useful when publishing [Servlets](#user-content-servlets).
+
 ## Provider-specific configuration
 Among the chief challenges of developing a provider-neutral WebSocket API is dealing with the edge cases, where one provider may offer something over another that isn't necessarily prescribed in the [WebSocket RFC](https://tools.ietf.org/html/rfc6455), or isn't a mandatory aspect of the protocol. For example, this could be the use of frame compression, multiplexing/channels or some other extension of the protocol. Alternatively, it may be some non-functional aspect of the implementation, such as the number of threads used for I/O, whether to enable direct buffers, or the underlying TCP socket (`SO_xxx`) options. There simply isn't a way of using a common set of configuration objects and a fixed set of attributes to define provider-specific configuration, without heading down the path of denormalisation.
 
@@ -302,8 +304,62 @@ In some messaging scenarios, a HWM will not suffice. The producer may actually n
 An alternative way of achieving the same is to use the `XSendCallback`, counting the number of confirmed messages vs the total number of sent messages. In fact, this is how backlog counter and HWM mechanisms work behind the scenes.
 
 ## Servlet support
+### A brief overview
+Socket.x is focused on WebSocket applications, and while the underlying providers may (and typically do) support a broader spectrum of HTTP, Socket.x does not attempt to solve this problem for the complete set of HTTP. We did, however, acknowledge that being able to host a basic Servlet alongside your WebSocket application can be very convenient, particularly when dealing with load balancers and service discovery proxies - you might want to expose a simple status or health check endpoint on the same port as your main WebSocket server.
+
+Socket.x adds **best-effort** Servlet 3.1 support. In other words, the Servlet 3.1 specification is supported _if and only if_ the underlying provider chooses to implement this, and it is under no obligation to do so in order to qualify as a fully-fledged Socket.x provider. Fortunately, both Undertow and Jetty providers support this feature. Netty, on the other hand, is not a Servlet container, and will throw an `UnsupportedOperationException` if you try to add a Servlet mapping.
+
+### Adding a Servlet mapping
+A Servlet mapping is defined in `XServerConfig` using the `withServlets()` method, as illustrated in the snippet below. The complete code listing for this example can be found in `examples/src/main/java/servlet`.
+```java
+// the Servlet definition
+public static class HealthCheckServlet extends HttpServlet {
+  private static final long serialVersionUID = 1L;   
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    System.out.format("Initialised with %s\n", config);
+  }
+
+  @Override
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    response.getWriter().write("Cruizin'");
+  }
+}
+
+// the main method (in a separate class)
+public static void main(String[] args) throws Exception {
+  XServer<?> server = UndertowServer
+      .factory()
+      .create(new XServerConfig()
+              .withPath("/echo")
+              .withPort(8080)
+              .withHttpsPort(8443)
+              .withSSLContextProvider(CompositeSSLContextProvider.getDevServerDefault())
+              .withServlets(new XMappedServlet("/health/*", HealthCheckServlet.class)),
+              new XEndpointLambdaListener<>());
+
+  if (Desktop.isDesktopSupported()) {
+    Desktop.getDesktop().browse(new URI("http://localhost:8080/health"));
+  }
+
+  Thread.sleep(60_000);
+  server.close();
+}
+```
+
+The `withServlets()` method takes in an a _varargs_ array of `XMappedServlet` objects. Each mapping specifies, at minimum, the path specification and the class of the Servlet - in our case a `HealthCheckServlet`. The life-cycle management of the Servlet is the responsibility of the Servlet container; it will be instantiated and initialised as required.
+
+Run the example above. If running from the desktop, it should automatically navigate to `http://localhost:8080/health` with the default browser. You have 60 seconds before the application terminates.
+
+**Note:** SSL configuration applies to _both_ WebSocket Secure and conventional HTTPS traffic. So `https://localhost:8443/health` will also work, albeit the browser will likely complain due to the untrusted nature of a self-signed certificate.
 
 ## Connection termination
+The `XEndpoint.close()` method is normally used for initiating an orderly disconnection sequence using `CLOSE` frames, as per the [WebSocket RFC](https://tools.ietf.org/html/rfc6455). In some cases, a party may not have the luxury of waiting for the connection to close gracefully. For example, the connection may have been deemed as inactive, corrupt, or otherwise compromised. In this case it's better to close the connection forcibly, using the `terminate()` method.
+
+The `XEndpointListener` has a pair of life-cycle methods - `onDisconnect(E endpoint, int statusCode, String reason)` and `onClose(E endpoint)` (where `E` is the concrete `XEndpoint` type). The `onClose()` method is always invoked when a connection is closed - cleanly or otherwise. The `onDisconnect()` method is invoked _if and only if_ the connection was closed gracefully, and in which case `onDisconnect()` is invoked before `onClose()`.
+
+If you need to handle the end-state of the connection, with no regard for the close status code or reason, implementing `onClose()` is sufficient, as this will handle both cases.
 
 ## Utilities
 Socket.x comes with a couple of utility classes that can come in very handy when working with not only WebSockets, but other sockets and protocols in general.
