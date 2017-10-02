@@ -147,9 +147,9 @@ Often, in WebSocket applications, we need to know if the counter-party is still 
 
 The WebSocket protocol supports layer 7 keep-alives using a pair of [Ping and Pong frames](https://tools.ietf.org/html/rfc6455#section-5.5.2). By convention, it is the responsibility of the server to send a Ping frame, which should be duly reciprocated with a Pong frame from the client. 
 
-Socket.x gives you manual control over sending Ping frames, should you require it. However, Socket.x also offers a **scanner** that monitors connection activity and automatically sends Pings during periods of inactivity. In addition, the scanner can forcibly terminate a connection that has been idle for too long (which also implies that it hasn't responded to a Ping). Both the server and the client are equipped with scanners; however, only the server's scanner will initiate a Ping. Both scanners are capable of terminating idle connections.
+Socket.x gives you manual control over sending Ping frames, should you require it. However, Socket.x also offers a **scanner** that monitors connection activity and automatically sends Pings during periods of inactivity. In addition, an idle timeout setting can be optionally assigned to terminate a connection that has been inactive for a set period of time. Only the server-side scanner will send Ping frames; however, both the server and the client containers can be configured to terminate connections due to inactivity. (The actual timeout detection and connection termination fall within the responsibilities of the underlying provider.)
 
-The following snippet configures the scanner's maximum keep-alive interval and idle timeouts (all times are in milliseconds):
+The following snippet configures the server's maximum keep-alive interval and sets idle timeouts (all times are in milliseconds):
 ```java
 // on the server
 new XServerConfig().withPingInterval(300_000).withIdleTimeout(600_000);
@@ -157,10 +157,10 @@ new XServerConfig().withPingInterval(300_000).withIdleTimeout(600_000);
 new XServerConfig().withIdleTimeout(600_000);
 ```
 
-**Note**: Since WebSockets are backed by TCP, the latter has a low-level mechanism for keeping connections alive (the `SO_KEEPALIVE` option in *NIX and Windows), which is entirely separate to the WebSockets' own Ping/Pong frames. Although you might have control over your runtime environment, and be tempted to use TCP keep-alives, consider that you typically have little to no control over the intermediate networking infrastructure, particularly if your application communicates over the public Internet. Certain network elements, such as proxies, which are typically optimised for short-lived HTTP connections, may prematurely terminate your long-lived WebSocket connection due to inactivity. As such, it's strongly recommended that you always use the WebSocket keep-alive mechanism independently of what the underlying TCP stack is configured for. (Unless, of course, if the TCP stack uses a more aggressive setting than your WebSocket keep-alives, in which case one or the other needs to change.) 
+**Note**: Since WebSockets are backed by TCP, the latter has a low-level mechanism for keeping connections alive (the `SO_KEEPALIVE` option in *NIX and Windows), which is entirely separate to the WebSockets' own Ping/Pong frames. Although you might have control over your runtime environment, and may be tempted to use TCP keep-alives, consider that you typically have little to no control over the intermediate networking infrastructure, particularly if your application communicates over the public Internet. Certain network elements, such as proxies, which are typically optimised for short-lived HTTP connections, may prematurely terminate your long-lived WebSocket connection due to inactivity. As such, it's strongly recommended that you always use the WebSocket keep-alive mechanism independently of what the underlying TCP stack is configured for. (Unless, of course, if the TCP stack uses a more aggressive setting than your WebSocket keep-alives, in which case one or the other needs to change.) 
 
 ### SSL
-Enabling SSL (to get the `wss://` protocol, which is just HTTPS behind the scenes) requires two things - selecting a HTTPS port and assigning an `SSLContext`. The following snippet demonstrates a simple, albeit somewhat naive SSL setup using self-signed certificates that is suitable for use in a development environment. The complete code listing is available at `examples/src/main/java/sample/ssl`.
+Enabling SSL (to get the `wss://` protocol, which is just HTTPS behind the scenes) requires two things - selecting a HTTPS port and assigning an `SSLContext`. The following snippet demonstrates a simple, albeit somewhat naive SSL setup using self-signed certificates that is suitable for a development environment. The complete code listing is available at `examples/src/main/java/sample/ssl`.
 ```java
 XServer<?> server = UndertowServer
     .factory()
@@ -198,12 +198,12 @@ Dissecting the above (which is minor a rehash of the 'echo' example) we see two 
 The `SSLContextProvider` interface is a factory for supplying an instance of `javax.net.ssl.SSLContext` - the standard way of configuring SSL in Java and [Java Secure Socket Extension](http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html) (JSSE). Socket.x comes with two out-of-the-box implementations.
 
 #### `DefaultSSLContextProvider`
-Used by default, as the name suggests. The resulting SSL context uses the default settings, and can be configured with the standard JSSE system properties, such as `javax.net.ssl.keyStore`, `javax.net.ssl.trustStore`, `javax.net.ssl.keyStorePassword`, etc. For more information, please consult the [JSSE reference guide](http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html).
+The equivalent of `SSLContext.getDefault()`. The resulting SSL context uses the default settings, and can be configured with the standard JSSE system properties, such as `javax.net.ssl.keyStore`, `javax.net.ssl.trustStore`, `javax.net.ssl.keyStorePassword`, etc. For more information, please consult the [JSSE reference guide](http://docs.oracle.com/javase/7/docs/technotes/guides/security/jsse/JSSERefGuide.html).
 
 #### `CompositeSSLContextProvider` 
-Offers a simple way of compositing factories of `javax.net.ssl.KeyManager` and `javax.net.ssl.TrustManager` instances, using `KeyManagerProvider` and `TrustManagerProvider` interfaces. The advantage of using a `CompositeSSLContextProvider` over a `DefaultSSLContextProvider` is that it lets configure JSSE on a case-by-case basis, rather than specifying a single 'global' configuration that will be applied throughout your application. So if your application uses SSL in several places, each requiring its own separate JSSE configuration, you'll need either a `CompositeSSLContextProvider`, or roll your own `SSLContextProvider` implementation.
+Offers a simple way of compositing factories of `javax.net.ssl.KeyManager` and `javax.net.ssl.TrustManager` instances, using `KeyManagerProvider` and `TrustManagerProvider` interfaces. The advantage of using a `CompositeSSLContextProvider` over a `DefaultSSLContextProvider` is that the former lets configure JSSE on a case-by-case basis, rather than specifying a single 'global' configuration that's applied throughout your application. So if your application uses SSL in several places, each requiring its own separate JSSE configuration, you'll need to either use a `CompositeSSLContextProvider`, or roll your own `SSLContextProvider` implementation.
 
-Our earlier example uses a `CompositeSSLContextProvider` to load a JKS `KeyStore` from a self-signed key store that ships with Socket.x, named `keystore-dev.jks`. The built-in key store contains both a private key and a corresponding X.509 certificate, but only the certificate is specified on the client, since we're using server authentication. The `JKSKeyManagerProvider` and `JKSTrustManagerProvider` do as the name suggests, loading a key/trust store from a given location. The latter is specified as a URL in the form `cp://...` for loading resources from the classpath, or `file://...` for reading from the local file system. As a convenience, `CompositeSSLContextProvider` has an additional static method - `getDevServerDefault()`, which loads the default key/trust store, as per the above example, but without the added verbosity. So the block
+Our earlier example uses a `CompositeSSLContextProvider` to load a JKS `KeyStore` from a self-signed key store that ships with Socket.x, named `keystore-dev.jks`. The built-in key store houses both a private key and a corresponding X.509 certificate, but only the certificate is specified on the client, since we're using server authentication. The `JKSKeyManagerProvider` and `JKSTrustManagerProvider` do as the name suggests, loading a key/trust store from a given location. The location is specified as a URI in the form `cp://...` for loading resources from the classpath, or `file://...` for reading from the local file system. As a convenience, `CompositeSSLContextProvider` has an additional static method - `getDevServerDefault()`, which loads the default key/trust store, as per the above example, but without the added verbosity. So the block
 ```java
 .withSSLContextProvider(new CompositeSSLContextProvider()
                         .withKeyManagerProvider(new JKSKeyManagerProvider()
@@ -214,23 +214,23 @@ Our earlier example uses a `CompositeSSLContextProvider` to load a JKS `KeyStore
                                                   .withLocation("cp://keystore-dev.jks")
                                                   .withStorePassword("storepass")))
 ```
-becomes
-```java
+becomes simply
 ```java
 .withSSLContextProvider(new CompositeSSLContextProvider().getDevServerDefault())
 ```
-You can also use `getDevServerDefault()` on the client side, which ends up trusting the self-signed certificate, and _only_ that certificate. Again, this is equivalent to our earlier example.
 
-Sometimes, especially while developing, we may want to trust all server certificates, irrespective of which party signed them or whether or not they're in our trust store. This is accommodated by the `LenientX509TrustManagerProvider` class, which you can use in place of a `JKSTrustManagerProvider`.
+You can also use `getDevServerDefault()` on the client side, which ends up trusting the embedded self-signed certificate, and _only_ that certificate. Again, this is equivalent to our earlier example.
+
+Sometimes, especially while developing, we may want to trust _all_ server certificates, irrespective of which party signed them or whether or not they're in our trust store. In other words, we want to use WSS purely for consistency, without concerning ourselves with certificate signing and distribution at this stage. This is accommodated by the `LenientX509TrustManagerProvider` class, which you can use in place of a `JKSTrustManagerProvider`.
 
 **Note:** At present, Socket.x only supports server authentication, as this is the dominant use case. Client authentication may be added in later versions.
 
 **Note:** SSL configuration applies to _both_ WebSocket and conventional HTTP traffic. In other words, the same `SSLContext` can be used to encrypt not only WSS, but also HTTPS endpoints. This is useful when publishing [Servlets](#user-content-servlets).
 
 ## Provider-specific configuration
-Among the chief challenges of developing a provider-neutral WebSocket API is dealing with the edge cases, where one provider may offer something over another that isn't necessarily prescribed in the [WebSocket RFC](https://tools.ietf.org/html/rfc6455), or isn't a mandatory aspect of the protocol. For example, this could be the use of frame compression, multiplexing/channels or some other extension of the protocol. Alternatively, it may be some non-functional aspect of the implementation, such as the number of threads used for I/O, whether to enable direct buffers, or the underlying TCP socket (`SO_xxx`) options. There simply isn't a way of using a common set of configuration objects and a fixed set of attributes to define provider-specific configuration, without heading down the path of denormalisation.
+Among the chief challenges of developing a provider-neutral WebSocket API is dealing with the edge cases, where one provider may offer something over another that isn't necessarily prescribed in the [WebSocket RFC](https://tools.ietf.org/html/rfc6455), or isn't a mandatory aspect of the protocol. An example could be the use of frame compression, multiplexing/channels or some other extension of the protocol. Alternatively, it may be some non-functional aspect of the implementation, such as the number of threads used for I/O, whether direct buffers should be used, or the underlying TCP socket (`SO_xxx`) options. There simply isn't a way of using a common set of configuration objects and a fixed set of attributes to define provider-specific configuration, without heading down the dark alley of denormalisation.
 
-Socket.x solves this with a generic `Attribute` - a structure encompassing a key, a pair of optional min/max constraints, and an optional default value. An attribute is used as a key in a `Map`, the value being an `Object`. Attributes allow you to specify additional configuration options that are known to specific providers. For example, the following snippet alters the number of threads and the buffer size used by Undertow.
+Socket.x solves this with a generic `Attribute` - a structure encompassing a key, a pair of optional min/max constraints, and an optional default value. An attribute is used as a key in a `Map`, the value being an `Object`. Attributes allow you to specify additional configuration options that are understood by specific providers. For example, the following snippet alters the number of threads and the buffer size used by Undertow.
 ```java
 new XServerConfig()
 .withAttributes(new AttributeMap()
@@ -245,14 +245,30 @@ Attributes are type-safe when used with the `AttributeMap` wrapper; the latter w
 **Note**: Provider-specific attributes are still in their infancy. To date, we've only added the absolute bare minimum, and there are lots yet to be done. Feel free to submit a PR.
 
 ## Loading with YConf
-Socket.x has baked-in support for [YConf](https://github.com/obsidiandynamics/yconf), letting you bootstrap your application from a YAML or JSON configuration file. The snippet below shows a sample `XServerConfig` represented in YAML.
+Socket.x has baked-in support for [YConf](https://github.com/obsidiandynamics/yconf), letting you bootstrap your application from a YAML or JSON configuration file. The snippet below shows a fairly complete sample `XServerConfig` represented in YAML.
 ```yaml
 port: 8080
+httpsPort: 8443
 path: /echo
 idleTimeoutMillis: 300000
 pingIntervalMillis: 60000
 scanIntervalMillis: 1000
 highWaterMark: 1000
+sslContextProvider:
+  type: com.obsidiandynamics.socketx.ssl.CompositeSSLContextProvider
+  keyManagerProvider:
+    type: com.obsidiandynamics.socketx.ssl.JKSKeyManagerProvider
+    location: cp://keystore-dev.jks
+    storePassword: storepass
+    keyPassword: keypass
+  trustManagerProvider:
+    type: com.obsidiandynamics.socketx.ssl.JKSTrustManagerProvider
+    location: cp://keystore-dev.jks
+    storePassword: storepass
+servlets:
+- path: /health/*
+  name: health
+  servletClass: sample.servlet.HealthCheckServlet  
 attributes:
   socketx.undertow.ioThreads: 8
   socketx.undertow.bufferSize: 65536
@@ -266,19 +282,19 @@ XServerConfig serverConfig = new MappingContext()
     .map(XServerConfig.class);
 ```
 
-The complete code listing for the above example is located at `examples/src/main/java/config`. To use YConf with the Snakeyaml parser, add `com.obsidiandynamics.yconf:yconf-snakeyaml:0.2.1` to your Gradle dependencies.
+The complete code listing for the above example is located at `examples/src/main/java/config`. To use YConf with the [Snakeyaml](https://bitbucket.org/asomov/snakeyaml) parser, add `com.obsidiandynamics.yconf:yconf-snakeyaml:0.2.1` to your Gradle dependencies.
 
 # Additional Topics
 ## Logging
 Socket.x classes log using [SLF4J](https://www.slf4j.org/), under the package `com.obsidiandynamics.socketx`. For normal operation, it's recommended to leave the `INFO` level on.
 
 ## Binary messages
-WebSockets support sending of binary frames using the same semantics as text frames, but sending the data bytes directly, without the UTF-8 encoding. To send and receive binary frames use `XEndpoint.send(ByteBuffer)` and `XEndpointListener.onBinary(XEndpoint, ByteBuffer)` respectively.
+WebSockets support sending of binary frames using the same semantics as text frames, but sending the data bytes directly, without the UTF-8 encoding. (In fact, apart from the encoding and the opcode, there is little difference between the two.) To send and receive binary frames use `XEndpoint.send(ByteBuffer)` and `XEndpointListener.onBinary(XEndpoint, ByteBuffer)` respectively.
 
-**Note**: There's one gotcha with binary messages, which doesn't apply to text. Socket.x accepts and provides a `ByteBuffer` for sending and receiving, which is a **mutable** data structure. It is the application's responsibility to ensure that the `ByteBuffer` instances aren't reused/recycled after calling `send()`. Failing to do so would violate thread safety, as the `ByteBuffer` is manipulated asynchronously, in a different thread to the caller.
+**Note**: There's one gotcha with binary messages, which doesn't apply to text. Socket.x accepts and provides a `ByteBuffer` for sending and receiving, which is a **mutable** data structure. It is the application's responsibility to ensure that the `ByteBuffer` instances aren't reused/recycled after calling `send()`. Failing to do so would violate thread safety and lead to race conditions, as the `ByteBuffer` is manipulated asynchronously, in a different thread to the caller.
 
 ## Send callback
-The `send(String|ByteBuffer)` operation on `XEndpoint` is asynchronous - it returns immediately after queuing the message to be sent by a background thread. To learn of the eventual status of the queued message, you can call the overloaded variant of `send()`, specifying an `XSendCallback` implementation. `XSendCallback` handles three life-cycle events:
+The `send(String|ByteBuffer)` operation on `XEndpoint` is asynchronous - it returns immediately after queuing the message, to be sent by a background thread later. To learn of the eventual status of the queued message, you can call the overloaded variant of `send()`, specifying an `XSendCallback` implementation. `XSendCallback` handles three life-cycle events:
 ```java
 void onComplete(XEndpoint endpoint);
 void onError(XEndpoint endpoint, Throwable cause);
@@ -286,28 +302,28 @@ void onSkip(XEndpoint endpoint);
 ```
 
 ### `onComplete()`
-Invoked when the message has been successfully sent, from the perspective of the sender. This doesn't apply that the message was received by the counter-party, or processed, for that matter. (These types of guarantees are outside of WebSocket scope, and require application-level support.)
+Invoked when the message has been successfully sent, from the perspective of the sender. This doesn't imply that the message was received by the counter-party, or successfully processed, for that matter. (These types of guarantees are outside of WebSocket scope, and require explicit application-level support.)
 
 ### `onError()`
-Invoked if the send operation through an exception with the underlying provider. The cause `Throwable` is made available.
+Invoked if the send operation threw an exception with the underlying provider. The `Throwable` cause is made available.
 
 ### `onSkip()`
 Invoked if the send message was dropped due to a breach of the [high-water mark](#user-content-high-water-mark). This means that the message _will not_ be sent at this time. You still have the ability to retry the send operation at a later point, should you want to.
 
 ## Flow control
-When building high-throughput WebSocket applications, one must consider scenarios where message producers and message consumers are operating at varying rates. This could be due to the difference in hardware, underlying resources, the time to process messages or network issues. At network level, WebSockets benefit from the underlying TCP/IP _sliding window_ flow control, ensuring the buffers in the protocol stack don't overflow and that packets aren't dropped. What happens at the application level is beyond the scope of WebSockets.
+When building high-throughput WebSocket applications, one must consider scenarios where message producers and message consumers are operating at varying rates. This could be due to the difference in hardware, underlying resources, the time to process messages or network congestion. At network level, WebSockets naturally benefit from the underlying TCP/IP _sliding window_ flow control, ensuring the buffers in the protocol stack don't overflow and that packets aren't dropped. What happens at the application level is beyond the scope of WebSockets.
 
-Asynchronous I/O is unequivocally better than its blocking counterpart when building web-scale applications. It does, however, miss out on one quality that is intrinsic in blocking I/O - flow control. When a blocking I/O library can't send any more messages, it exerts backpressure on the producer. By contrast, a non-blocking library has no affect on the producer, leading to potential a build-up of messages in the send queue. This can cause all sorts of problems, one of which being heap exhaustion on the sending machine.
+Asynchronous I/O is unequivocally better than its blocking counterpart when building web-scale applications. It does, however, miss out on one important quality that is intrinsic to blocking I/O - flow control. When a blocking I/O library can't send any more date, it exerts backpressure on the producer. By contrast, a non-blocking library has no affect on the producer, leading to a potential build-up of messages in the send queue. This can cause all sorts of problems, the most troublesome of which being heap exhaustion on the sending machine.
 
-To prevent message build-up without blocking or imposing any type of flow control measure, Socket.x comes with [high-water mark](#user-content-high-water-mark) - dropping messages when the outgoing queue reaches a certain size. This is disabled by default (as there is no sensible default HWM), and needs to be enabled explicitly. A HWM isn't the most elegant way of dealing with congestion, but it is very effective in high fan-out, broadcast-style messaging scenarios involving a large number of consumers, whereby a single producer serves the same messages to each consumer and the loss of a message isn't catastrophic. (In other words, messages are informative, rather than prescriptive, and the correctness of the consumer isn't dependent on receiving all messages.)
+To prevent message build-up without blocking or imposing any type of flow control, Socket.x comes with [high-water mark](#user-content-high-water-mark) support - dropping messages when the outgoing queue reaches a certain size. This is disabled by default (as there is no sensible default HWM), and needs to be enabled explicitly. A HWM isn't the most elegant way of dealing with congestion, but it is very effective in high fan-out, broadcast-style messaging scenarios involving a large number of consumers, whereby a single producer serves the same messages to each consumer and the loss of a message isn't catastrophic. (In other words, messages are informative, rather than prescriptive, and the correctness of the consumer isn't dependent on receiving all messages.)
 
-In some messaging scenarios, a HWM will not suffice. The producer may actually need to stop sending if the consumer is unable to keep up. In Socket.x this can be accomplished by querying the `getBacklog()` method of an `XEndpoint`. This method returns the number of messages sitting in the outgoing queue, letting the application decide whether it is appropriate to send another message at that point in time.
+In some messaging scenarios, a HWM will not suffice. The producer may actually need to stop sending if the consumer is unable to keep up. This is particularly crucial when the WebSocket endpoint _is the source of truth_, and the consumer has no way of recovering from the message loss. In Socket.x this can be accomplished by querying the `getBacklog()` method of an `XEndpoint` prior to sending. The `getBacklog()` method returns the number of messages sitting in the outgoing queue, letting the application decide whether it is appropriate to send another message at that point in time.
 
-An alternative way of achieving the same is to use the `XSendCallback`, counting the number of confirmed messages vs the total number of sent messages. In fact, this is how backlog counter and HWM mechanisms work behind the scenes.
+An alternative way of achieving the same outcome is to use the `XSendCallback` hook, counting the number of confirmed messages _versus_ the total number of sent messages. In fact, this is roughly how the backlog counter and HWM mechanisms work behind the scenes.
 
 ## Servlet support
 ### A brief overview
-Socket.x is focused on WebSocket applications, and while the underlying providers may (and typically do) support a broader spectrum of HTTP, Socket.x does not attempt to solve this problem for the complete set of HTTP. We did, however, acknowledge that being able to host a basic Servlet alongside your WebSocket application can be very convenient, particularly when dealing with load balancers and service discovery proxies - you might want to expose a simple status or health check endpoint on the same port as your main WebSocket server.
+Socket.x is focused on WebSocket applications. And while the underlying providers may (and typically do) support a broader spectrum of HTTP, Socket.x does not attempt to solve this problem for the complete set of HTTP use cases. Crucially, this would run contrary to the Socket.x design philosophy - to offer an **uncompromised, WebSocket-centric programming model**, no other strings attached. That said, we do acknowledge that being able to host a basic Servlet alongside your WebSocket application can be somewhat convenient, particularly when dealing with load balancers and service discovery proxies - you might want to expose a simple status or health check endpoint on the same port as your main WebSocket server. Taking this further, it would be doubly convenient to leverage this capability _generically_, without dealing directly with the underlying provider.
 
 Socket.x adds **best-effort** Servlet 3.1 support. In other words, the Servlet 3.1 specification is supported _if and only if_ the underlying provider chooses to implement this, and it is under no obligation to do so in order to qualify as a fully-fledged Socket.x provider. Fortunately, both Undertow and Jetty providers support this feature. Netty, on the other hand, is not a Servlet container, and will throw an `UnsupportedOperationException` if you try to add a Servlet mapping.
 

@@ -1,9 +1,25 @@
 port: 8080
+httpsPort: 8443
 path: /echo
 idleTimeoutMillis: 300000
 pingIntervalMillis: 60000
 scanIntervalMillis: 1000
 highWaterMark: 1000
+sslContextProvider:
+  type: com.obsidiandynamics.socketx.ssl.CompositeSSLContextProvider
+  keyManagerProvider:
+    type: com.obsidiandynamics.socketx.ssl.JKSKeyManagerProvider
+    location: cp://keystore-dev.jks
+    storePassword: storepass
+    keyPassword: keypass
+  trustManagerProvider:
+    type: com.obsidiandynamics.socketx.ssl.JKSTrustManagerProvider
+    location: cp://keystore-dev.jks
+    storePassword: storepass
+servlets:
+- path: /health/*
+  name: health
+  servletClass: sample.servlet.HealthCheckServlet  
 attributes:
   socketx.undertow.ioThreads: 8
   socketx.undertow.bufferSize: 65536

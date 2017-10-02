@@ -1,31 +1,13 @@
 package sample.servlet;
 
 import java.awt.*;
-import java.io.*;
 import java.net.*;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
 
 import com.obsidiandynamics.socketx.*;
 import com.obsidiandynamics.socketx.ssl.*;
 import com.obsidiandynamics.socketx.undertow.*;
 
 public final class HealthCheck {
-  public static class HealthCheckServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-    
-    @Override
-    public void init(ServletConfig config) throws ServletException {
-      System.out.format("Initialised with %s\n", config);
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-      response.getWriter().write("Cruizin'");
-    }
-  }
-  
   public static void main(String[] args) throws Exception {
     final XServer<?> server = UndertowServer
         .factory()
