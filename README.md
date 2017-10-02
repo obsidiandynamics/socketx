@@ -6,16 +6,16 @@ Socket.x is a library for building high-performance, distributed [WebSocket](htt
 
 # Why Socket.x
 ## Speed and latency
-Socket.x has been benchmarked in excess of **1 million messages/second** on a 2010-era i7 quad-core CPU, using the [Undertow](http://undertow.io/) provider. [Applications](#user-content-applications-using-socketx) built on Socket.x have demonstrated message switching at **sub-millisecond latencies**.
+Socket.x has been benchmarked in excess of **1 million messages/second** on a 2010-era i7 quad-core CPU, using the [Undertow](http://undertow.io/) provider. [Applications built on Socket.x](#user-content-applications-using-socketx) have demonstrated message switching at **sub-millisecond latencies**.
 
 ## Asynchronous and event-driven API
-Socket.x APIs are designed around asynchronous, non-blocking and event-driven interactions. This allows you service a huge number of concurrent clients while utilising a relatively few number of OS threads. Applications built on top of Socket.x have achieved in excess of 1,000,000 connections per node. To put things into context, thread-bound Web servers usually top out between one and ten thousand connections.
+Socket.x APIs are designed around asynchronous, non-blocking and event-driven interactions. This allows you service a huge number of concurrent clients while utilising a relatively few number of OS threads. Applications built with Socket.x have achieved in excess of 1,000,000 connections per node. To put things into context, thread-bound Web servers usually top out between one and ten thousand connections.
 
 ## Provider-independent
-Socket.x isn't a WebSocket implementation _per se_. It offers a **simple, uniform API** for working with a range of WebSocket client/server implementations - called **providers**, including the industry heavy-weights [Undertow](http://undertow.io/) and [Jetty](https://www.eclipse.org/jetty). This gives you the flexibility to adopt a provider that you're most familiar with, particularly if you require certain provider-specific features.
+Socket.x isn't a WebSocket implementation _per se_. It offers a **simple, uniform API** for working with a range of compliant WebSocket client/server implementations, called **providers**, including the industry heavy-weights [Undertow](http://undertow.io/) and [Jetty](https://www.eclipse.org/jetty). This gives you the flexibility to adopt a provider that you're most familiar with, particularly if you require certain provider-specific features.
 
 ## Simplicity
-Having a standard API isn't just for provider portability. It gives you a **clean programming model** that isn't influenced by any particular provider and is generally **much easier to work with**. Everything's in one convenient place, well-documented and the same set of primitives are reused for both server and client parts of your application. By contrast, and we acknowledge the subjectivity of this statement, providers such as Jetty and Undertow, while being outstanding in many key areas, have evolved over numerous releases by a diverse group of contributors. As a result, the API is incohesive in parts, can be challenging to learn, difficult to recall and enduring to work with, and varies depending on whether you are building a server or a client. Even seemingly simple things, such as configuring SSL, requires a significant amount of reading up on.
+Having a standard API isn't just for provider portability. It gives you a **clean programming model** that isn't influenced by any particular provider and is generally **much easier to work with**. Everything's in one convenient place, well-documented and the same set of primitives are reused for both server and client parts of your application. By contrast, and we acknowledge the subjectivity of this statement, providers such as Jetty and Undertow, while being outstanding in many key areas, have evolved over numerous generational  with help from a diverse group of contributors. They also typically accommodate multiple use cases - not just WebSockets, but the full breadth of the HTTP spectrum. As a result, the API is incohesive in parts, can be challenging to learn, difficult to recall and enduring to work with, and varies depending on whether you are building a server or a client. Even seemingly simple things, such as configuring SSL, requires a significant amount of reading up on. By contrast, Socket.x is designed ground-up specifically for WebSockets and asynchronous I/O, presenting a pure and uncompromised coding experience.
 
 # Getting Started
 ## Get the binaries
@@ -38,13 +38,13 @@ For Gradle:
 compile 'com.obsidiandynamics.socketx:socketx-core:0.1.0'
 ```
 
-The import above only gets you the Socket.x API. In addition, you'll need to import at least one provider. We recommend Undertow, purely due to its blistering performance and solid standards-compliance.
+The import above only gets you the Socket.x core API. In addition, you'll need to import at least one provider. We recommend Undertow, purely due to its blistering performance and solid standards-compliance.
 ```groovy
 compile 'com.obsidiandynamics.socketx:socketx-undertow:0.1.0'
 ```
 
 ## Basic 'echo' app
-The following Java snippet demonstrates a basic client/server 'echo' app. The complete sample code is located in `examples/src/main/java/sample/echo`.
+The following Java snippet demonstrates a basic client/server 'echo' app - sending a message from the client to the server and receiving a response. The complete sample code is located in `examples/src/main/java/sample/echo`.
 ```java
 XServer<?> server = UndertowServer
     .factory()
@@ -94,7 +94,7 @@ Server: received 'Hello from client'
 Client: received 'Hello reply from server'
 ```
 
-The two key players in Socket.x are `XServer` and `XClient`. `XServer` accepts connections, while `XClient` lets you create connections. Both must be instantiated through an `XServerFactory` and an `XClientFactory`; a default pair of factories is available for each supported provider. In our example, we've chosen to use `UndertowServer.factory()` and `UndertowClient.factory()`. We could've just as easily used `JettyServer`/`JettyClient` instead, without changing any other code, providing we first import `socketx-jetty` in our `build.gradle`. You can even mix `JettyServer` with `UndertowClient`.
+The two key players in Socket.x are `XServer` and `XClient`. `XServer` accepts connections, while `XClient` lets you create outgoing connections. They must be instantiated through an `XServerFactory` or an `XClientFactory`, as appropriate; a default pair of factories is available for each supported provider. In our example, we've chosen to use `UndertowServer.factory()` and `UndertowClient.factory()`. We could've just as easily used `JettyServer`/`JettyClient` instead, without changing any other code, providing we first import `socketx-jetty` in our `build.gradle`. You can even mix `JettyServer` with `UndertowClient`.
 
 The next item of significance is `XServerConfig` and `XClientConfig` classes - a single, uniform mechanism for [configuring Socket.x](#user-content-configuration), irrespective of the provider. (It can also be used to pass [provider-specific configuration](#user-content-provider-specific-configuration)). In our example, we're asking the server to listen on port `8080` and publish endpoints on the `/echo` path. We're also sticking with the default `XClientConfig` in this case.
 
@@ -390,7 +390,7 @@ Utilities for working with TCP sockets. Notable methods include -
 * `drainPort(int port, int maxUseCount, int drainIntervalMillis)` - blocks the calling thread until the number of uses of the given port reaches or drops below `maxUseCount`, effectively draining the port of open connections. The `drainIntervalMillis` parameter introduces waits between successive checks.
 
 ### `URIBuilder`
-A fluent builder creating `URI` objects. The following snippet demonstrates its use:
+A fluent builder for incrementally assembling `URI` objects. The following snippet demonstrates its use:
 ```java
 URI uri = URIBuilder.create()
     .withWebSocket(true)

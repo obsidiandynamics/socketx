@@ -190,11 +190,6 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
   }
 
   @Override
-  public String toString() {
-    return "JettyEndpoint [remote=" + getRemoteAddress() + ", lastActivity=" + getLastActivityZoned() + "]";
-  }
-
-  @Override
   public void onWebSocketPing(ByteBuffer payload) {
     manager.getListener().onPing(this, payload);
     touchLastActivityTime();
@@ -204,5 +199,10 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
   public void onWebSocketPong(ByteBuffer payload) {
     manager.getListener().onPong(this, payload);
     touchLastActivityTime();
+  }
+
+  @Override
+  public String toString() {
+    return XEndpoint.defaultToString(this);
   }
 }

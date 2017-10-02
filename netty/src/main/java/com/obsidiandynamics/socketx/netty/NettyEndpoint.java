@@ -176,6 +176,6 @@ public final class NettyEndpoint implements XEndpoint {
 
   @Override
   public String toString() {
-    return "NettyEndpoint [remote=" + getRemoteAddress() + ", lastActivity=" + getLastActivityZoned() + "]";
+    return XEndpoint.defaultToString(this);
   }
 }

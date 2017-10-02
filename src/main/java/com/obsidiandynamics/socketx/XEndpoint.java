@@ -127,4 +127,15 @@ public interface XEndpoint extends AutoCloseable {
   default boolean awaitClose(int waitMillis) throws InterruptedException {
     return Await.bounded(waitMillis, () -> ! isOpen());
   }
+  
+  /**
+   *  The default {@code toString()} implementation.
+   *  
+   *  @param endpoint The endpoint.
+   *  @return The default {@code toString()}} representation.
+   */
+  static String defaultToString(XEndpoint endpoint) {
+    return endpoint.getClass().getSimpleName() + 
+        " [remote=" + endpoint.getRemoteAddress() + ", lastActivity=" + endpoint.getLastActivityZoned() + "]";
+  }
 }

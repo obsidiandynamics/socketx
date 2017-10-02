@@ -216,6 +216,6 @@ public final class UndertowEndpoint extends AbstractReceiveListener implements X
 
   @Override
   public String toString() {
-    return "UndertowEndpoint [remote=" + getRemoteAddress() + ", lastActivity=" + getLastActivityZoned() + "]";
+    return XEndpoint.defaultToString(this);
   }
 }
