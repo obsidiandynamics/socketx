@@ -94,9 +94,9 @@ Server: received 'Hello from client'
 Client: received 'Hello reply from server'
 ```
 
-The two key players in Socket.x are `XServer` and `XClient`. `XServer` accepts connections, while `XClient` lets you create outgoing connections. They must be instantiated through an `XServerFactory` or an `XClientFactory`, as appropriate; a default pair of factories is available for each supported provider. In our example, we've chosen to use `UndertowServer.factory()` and `UndertowClient.factory()`. We could've just as easily used `JettyServer`/`JettyClient` instead, without changing any other code, providing we first import `socketx-jetty` in our `build.gradle`. You can even mix `JettyServer` with `UndertowClient`.
+The two key players in Socket.x are `XServer` and `XClient`. `XServer` accepts connections, while `XClient` lets you create outgoing connections. They must be instantiated through an `XServerFactory` or an `XClientFactory`, as appropriate; a default pair of factories is available for each supported provider. In our example, we've chosen to use `UndertowServer.factory()` and `UndertowClient.factory()`. We could've just as easily used `JettyServer`/`JettyClient` instead, without changing any other code, providing we first import `socketx-jetty` in our `build.gradle`. You can even mix `JettyServer` with `UndertowClient`; the client and server subsystems are completely independent of one another.
 
-The next item of significance is `XServerConfig` and `XClientConfig` classes - a single, uniform mechanism for [configuring Socket.x](#user-content-configuration), irrespective of the provider. (It can also be used to pass [provider-specific configuration](#user-content-provider-specific-configuration)). In our example, we're asking the server to listen on port `8080` and publish endpoints on the `/echo` path. We're also sticking with the default `XClientConfig` in this case.
+The next item of significance is `XServerConfig` and `XClientConfig` - a single, uniform mechanism for [configuring Socket.x](#user-content-configuration), irrespective of the provider. (It can also be used to pass [provider-specific configuration](#user-content-provider-specific-configuration)). In our example, we're asking the server to listen on port `8080` and publish an endpoint on the `/echo` path. In this example, we're sticking with the default `XClientConfig` for our client.
 
 When setting up a server, or when creating a new connection, one must supply an `XEndpointListener` implementation. This is a simple interface comprising the following self-describing methods:
 ```java
@@ -110,16 +110,18 @@ void onClose(E endpoint);
 void onError(E endpoint, Throwable cause);
 ```
 
-If you favour functional programming, or need to selectively handle certain events (while ignoring others), use the `XEndpointLambdaListener`. Simply provide a lambda for each of the `onXxx` methods, using the same signature as the corresponding method in the `XEndpointListener` interface. Alternatively, you can just subclass `XEndpointLambdaListener` directly, overriding the methods you see fit.
+If you favour functional programming, or need to selectively handle certain events (while ignoring others), use the `XEndpointLambdaListener`. Simply provide a lambda for each of the `onXxx` methods, using the same signature as the corresponding method in the `XEndpointListener` interface, as was illustrated in our earlier example. Alternatively, you can just subclass `XEndpointLambdaListener` directly, overriding the methods you see fit.
 
 In our simple 'echo' example, we've provided `onConnect` and `onText` handlers, invoked when a connection is established and when a text message is received, respectively. The client opens a connection with `client.connect()` and sends a text message by calling `send(String)` on the newly opened endpoint. Upon receipt, the server echoes the message by calling `send(String)` on the handled endpoint. When the client receives the response, it severs the connection by calling `close()`.
 
-The `drain()` method on an `XClient` blocks the calling thread until the client has no more live endpoints. (An equivalent method is also defined on `XServer`.) In our example this ensures that we don't prematurely clean up before the messages have gone through. (Remember, Socket.x is asynchronous - it doesn't block when sending a message.) We could've just as easily used a crude `Thread.sleep()`, but a `drain()` is much more elegant. Calling `close()` on an `XServer` or an `XClient` instance will close all underlying connections, await closure, and clean up any resources - threads, sockets, byte buffers, and so forth.
+The `drain()` method on an `XClient` blocks the calling thread until the client container has no more live endpoints. (An equivalent method is also defined on `XServer`.) In our example this ensures that we don't prematurely clean up before the messages have gone through. (Remember, Socket.x is asynchronous - it doesn't block when sending a message.) We could've just as easily used a crude `Thread.sleep()`, but a `drain()` is much more elegant and efficient. 
+
+Calling `close()` on an `XServer` or an `XClient` instance will attempt to close all underlying connections, await closure, and clean up any resources - threads, sockets, byte buffers, and so forth.
 
 
 # Configuration
 ## Common configuration
-Socket.x server and client providers are configured using the `XServerConfig` and `XClientConfig` objects respectively. These comprise attributes common to all providers, and can be assigned using the `withXxx()` chained methods. Alternatively, one can subclass the config and define these attributes in-line, using the double-brace initialization pattern, as shown in the snippet below. Beware though, as the usual caveats apply; this technique inadvertently results in an anonymous inner class, holding a reference to its enclosing object.
+Socket.x server and client providers are configured using the `XServerConfig` and `XClientConfig` objects respectively. These comprise attributes common to all providers, and can be assigned using the `withXxx()` chained methods. Alternatively, one can subclass the config and define these attributes in-line, using the double-brace initialization pattern, as shown in the snippet below. Beware though, as the usual caveats apply; this technique inadvertently results in an anonymous inner class, holding a reference to its enclosing object. (We're _not_ advocating this pattern for the aforementioned reasons; we're merely stating that it's use is viable.)
 ```java
 new XServerConfig() {{
   path = "/echo";
@@ -128,9 +130,9 @@ new XServerConfig() {{
 ```
 
 ### High-water mark
-A high-water mark (HWM) acts as a hard cut-off point for the number of outstanding (queued, but not yet sent) messages on a given endpoint connection. When a connection reaches its HWM (typically through repeated unthrottled calls to `send()`), the new messages will be discarded. By default, the HWM is set to `Long.MAX_VALUE`, which effectively means no HWM.
+A high-water mark (HWM) acts as a hard cut-off point for the number of outstanding (queued, but not yet sent) messages on a given endpoint connection. When a connection reaches its HWM (typically through repeated unthrottled calls to `send()`), any new messages that would otherwise land above the high-water mark will be automatically discarded. By default, the HWM is set to `Long.MAX_VALUE`, which effectively means no HWM. It needs to be enabled explicitly.
 
-An HWM can apply to both server-side and client-side endpoints. To set a HWM, follow the snippet below:
+A HWM can apply to both server-side and client-side endpoints. To set a HWM, follow the snippet below:
 ```java
 // for a server
 new XServerConfig().withHighWaterMark(1000);
@@ -138,14 +140,14 @@ new XServerConfig().withHighWaterMark(1000);
 new XClientConfig().withHighWaterMark(1000);
 ```
 
-HWMs are discussed in more detail in the [flow control](#user-content-flow-control) section.
+HWMs are discussed in more detail in the context of [flow control](#user-content-flow-control).
 
 ### Connection keep-alive
-Often, in WebSocket applications, we need to know if the counter-party is still there. This isn't always obvious, particularly if the connection carries spurious traffic and may be idle for extended periods of time. The idle state poses another challenge - the TCP stack of either party may forcibly close the connection after a period of inactivity.
+Often, in WebSocket applications, we need to know if the counter-party is still there. This isn't always obvious, particularly if the connection carries spurious traffic and may be idle for extended periods of time. The idle state poses another challenge - the TCP stack of either party, or an intermediary, may forcibly close the connection after a period of inactivity.
 
-The WebSocket protocol supports keep-alives using a pair of [Ping and Pong frames](https://tools.ietf.org/html/rfc6455#section-5.5.2). By convention, it is the responsibility of the server to send a ping frame, which should be duly reciprocated with a pong frame. 
+The WebSocket protocol supports layer 7 keep-alives using a pair of [Ping and Pong frames](https://tools.ietf.org/html/rfc6455#section-5.5.2). By convention, it is the responsibility of the server to send a Ping frame, which should be duly reciprocated with a Pong frame from the client. 
 
-While  giving you manual control over the ability over sending ping frames should you require it, Socket.x also offers a **scanner** that monitors connection activity and automatically sends pings during periods of inactivity. In addition, the scanner can forcibly terminate a connection that has been idle for too long (which also implies that it hasn't responded to a ping). Both the server and the client are equipped with scanners; however, only the server's scanner will initiate a ping. Both scanners are capable of terminating idle connections.
+Socket.x gives you manual control over sending Ping frames, should you require it. However, Socket.x also offers a **scanner** that monitors connection activity and automatically sends Pings during periods of inactivity. In addition, the scanner can forcibly terminate a connection that has been idle for too long (which also implies that it hasn't responded to a Ping). Both the server and the client are equipped with scanners; however, only the server's scanner will initiate a Ping. Both scanners are capable of terminating idle connections.
 
 The following snippet configures the scanner's maximum keep-alive interval and idle timeouts (all times are in milliseconds):
 ```java
@@ -155,7 +157,7 @@ new XServerConfig().withPingInterval(300_000).withIdleTimeout(600_000);
 new XServerConfig().withIdleTimeout(600_000);
 ```
 
-**Note**: Since WebSockets are backed by TCP, the latter has a low-level mechanism for keeping connections alive (the `SO_KEEPALIVE` option in *NIX and Windows), which is entirely separate to the WebSockets' own ping/pong frames. Although you might have control over your runtime environment, and be tempted to use TCP keep-alives, consider that you typically have little to no control over the intermediate networking infrastructure, particularly if your application communicates over the public Internet. Certain network elements, such as proxies, which are typically optimised for short-lived HTTP connections, may prematurely terminate your long-lived WebSocket connection due to inactivity. As such, it's strongly recommended that you always use the WebSocket keep-alive mechanism independently of what the underlying TCP stack is configured for. (Unless, of course, if the TCP stack uses a more aggressive setting than your WebSocket keep-alives, in which case one or the other needs to change.) 
+**Note**: Since WebSockets are backed by TCP, the latter has a low-level mechanism for keeping connections alive (the `SO_KEEPALIVE` option in *NIX and Windows), which is entirely separate to the WebSockets' own Ping/Pong frames. Although you might have control over your runtime environment, and be tempted to use TCP keep-alives, consider that you typically have little to no control over the intermediate networking infrastructure, particularly if your application communicates over the public Internet. Certain network elements, such as proxies, which are typically optimised for short-lived HTTP connections, may prematurely terminate your long-lived WebSocket connection due to inactivity. As such, it's strongly recommended that you always use the WebSocket keep-alive mechanism independently of what the underlying TCP stack is configured for. (Unless, of course, if the TCP stack uses a more aggressive setting than your WebSocket keep-alives, in which case one or the other needs to change.) 
 
 ### SSL
 Enabling SSL (to get the `wss://` protocol, which is just HTTPS behind the scenes) requires two things - selecting a HTTPS port and assigning an `SSLContext`. The following snippet demonstrates a simple, albeit somewhat naive SSL setup using self-signed certificates that is suitable for use in a development environment. The complete code listing is available at `examples/src/main/java/sample/ssl`.
@@ -370,6 +372,8 @@ These two utilities are often used together. `Await`'s methods block the calling
 `Timesert` is a wrapper around `Await` that's useful for testing assertions and works well with frameworks such as JUnit and TestNG. You might notice that it's strikingly similar to Awaitility; however, `Timesert` is significantly more efficient and doesn't suffer from a subtle problem that has been shown to adversely affect Awaitility - a system clock that isn't monotonically non-decreasing. (While rare, this condition can happen when using NTP, and is particularly problematic on macOS.) `Timesert` is robust to negative clock drift. Having migrated all test cases (hundreds of them) from Awaitility to Timesert, we've noticed significantly higher CPU utilisation of unit tests (about 50% higher than baseline) and a corresponding reduction time in builds by about 30%.
 
 `Await` and `Timesert` are useful when writing and testing network applications, as events don't happen instantly. For example, when sending a message you might want to assert that it has been received. But running an assertion on the receiver immediately following a send in an asynchronous environment will likely fail. Using `Timesert` allows for assertions to fail up to a certain point, after which the `AssertionError` is percolated to the caller and the test case fails. This way `Timesert` allows you to write efficient, reproducible assertions without resorting to `Thread.sleep()`.
+
+**Note**: While working through the examples above, you would've already used `Await`, probably without realising it. The `drain()` method actually calls `Await.perpetual()` behind the scenes.
 
 ### `BinaryUtils`
 Provides conversion and printing utilities for binary data (byte arrays). The `dump()` method is the most useful, converting a byte array into a multi-line hex dump, reminiscent of the output of popular hex editors. The following is an example of its output:

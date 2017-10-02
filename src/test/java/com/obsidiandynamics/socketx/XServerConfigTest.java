@@ -28,16 +28,6 @@ public final class XServerConfigTest {
   }
 
   @Test
-  public void testIdleTimout() {
-    assertEquals(1000, new XServerConfig().withIdleTimeout(1000).idleTimeoutMillis);
-  }
-
-  @Test
-  public void testScanInterval() {
-    assertEquals(2000, new XServerConfig().withScanInterval(2000).scanIntervalMillis);
-  }
-
-  @Test
   public void testPingInterval() {
     assertEquals(3000, new XServerConfig().withPingInterval(3000).pingIntervalMillis);
   }

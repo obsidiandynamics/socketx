@@ -48,18 +48,8 @@ public class XServerConfig extends XEndpointConfig<XServerConfig> {
     return this;
   }
   
-  public XServerConfig withIdleTimeout(int idleTimeoutMillis) {
-    this.idleTimeoutMillis = idleTimeoutMillis;
-    return this;
-  }
-  
   public XServerConfig withPingInterval(int pingIntervalMillis) {
     this.pingIntervalMillis = pingIntervalMillis;
-    return this;
-  }
-  
-  public XServerConfig withScanInterval(int scanIntervalMillis) {
-    this.scanIntervalMillis = scanIntervalMillis;
     return this;
   }
   
