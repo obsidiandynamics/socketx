@@ -3,6 +3,9 @@ package com.obsidiandynamics.socketx.util;
 import java.nio.*;
 import java.util.*;
 
+/**
+ *  Provides conversion and printing utilities for binary data (byte arrays).
+ */
 public final class BinaryUtils {
   private BinaryUtils() {}
   

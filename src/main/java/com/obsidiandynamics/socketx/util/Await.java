@@ -17,35 +17,89 @@ public final class Await {
   
   private Await() {}
   
-  public static void perpetual(BooleanSupplier test) throws InterruptedException {
-    bounded(Integer.MAX_VALUE, DEF_INTERVAL, test);
+  /**
+   *  A variant of {@link #perpetual(int, BooleanSupplier)}, using an interval of 
+   *  {@link #DEF_INTERVAL} between successive tests.
+   *  
+   *  @param condition The condition to await.
+   *  @throws InterruptedException If the thread was interrupted while waiting for the condition.
+   */
+  public static void perpetual(BooleanSupplier condition) throws InterruptedException {
+    bounded(Integer.MAX_VALUE, DEF_INTERVAL, condition);
   }
   
-  public static void perpetual(int intervalMillis, BooleanSupplier test) throws InterruptedException {
-    bounded(Integer.MAX_VALUE, intervalMillis, test);
+  /**
+   *  Blocks indefinitely until the condition specified by the given {@link BooleanSupplier}
+   *  is satisfied.
+   *  
+   *  @param intervalMillis The interval between successive tests, in milliseconds.
+   *  @param condition The condition to await.
+   *  @throws InterruptedException If the thread was interrupted while waiting for the condition.
+   */
+  public static void perpetual(int intervalMillis, BooleanSupplier condition) throws InterruptedException {
+    bounded(Integer.MAX_VALUE, intervalMillis, condition);
   }
   
-  public static void boundedTimeout(int waitMillis, BooleanSupplier test) throws InterruptedException, TimeoutException {
-    boundedTimeout(waitMillis, DEF_INTERVAL, test);
+  /**
+   *  A variant of {@link #boundedTimeout(int, int, BooleanSupplier)}, using an interval of 
+   *  {@link #DEF_INTERVAL} between successive tests.
+   *  
+   *  @param waitMillis The upper bound on the wait time, in milliseconds.
+   *  @param condition The condition to await.
+   *  @throws InterruptedException If the thread was interrupted while waiting for the condition.
+   *  @throws TimeoutException If the condition wasn't satisfied within the given time frame.
+   */
+  public static void boundedTimeout(int waitMillis, BooleanSupplier condition) throws InterruptedException, TimeoutException {
+    boundedTimeout(waitMillis, DEF_INTERVAL, condition);
   }
   
-  public static boolean bounded(int waitMillis, BooleanSupplier test) throws InterruptedException {
-    return bounded(waitMillis, DEF_INTERVAL, test);
+  /**
+   *  A variant of {@link #bounded(int, int, BooleanSupplier)}, using an interval of 
+   *  {@link #DEF_INTERVAL} between successive tests.
+   *  
+   *  @param waitMillis The upper bound on the wait time, in milliseconds.
+   *  @param condition The condition to await.
+   *  @return The final result of the tested condition; if {@code false} then this invocation has timed out.
+   *  @throws InterruptedException If the thread was interrupted while waiting for the condition.
+   */
+  public static boolean bounded(int waitMillis, BooleanSupplier condition) throws InterruptedException {
+    return bounded(waitMillis, DEF_INTERVAL, condition);
   }
   
+  /**
+   *  Awaits a condition specified by the given {@link BooleanSupplier}, blocking until the condition
+   *  evaluates to {@code true}. If the condition isn't satisfied within the alloted time frame, a 
+   *  {@link TimeoutException} is thrown.
+   *  
+   *  @param waitMillis The upper bound on the wait time, in milliseconds.
+   *  @param intervalMillis The interval between successive tests, in milliseconds.
+   *  @param condition The condition to await.
+   *  @throws InterruptedException If the thread was interrupted while waiting for the condition.
+   *  @throws TimeoutException If the condition wasn't satisfied within the given time frame.
+   */
   public static void boundedTimeout(int waitMillis, 
                                     int intervalMillis, 
-                                    BooleanSupplier test) throws InterruptedException, TimeoutException {
-    if (! bounded(waitMillis, intervalMillis, test)) {
+                                    BooleanSupplier condition) throws InterruptedException, TimeoutException {
+    if (! bounded(waitMillis, intervalMillis, condition)) {
       throw new TimeoutException(String.format("Timed out after %,d ms", waitMillis));
     }
   }
   
-  public static boolean bounded(int waitMillis, int intervalMillis, BooleanSupplier test) throws InterruptedException {
+  /**
+   *  Awaits a condition specified by the given {@link BooleanSupplier}, blocking until the condition
+   *  evaluates to {@code true}.
+   *  
+   *  @param waitMillis The upper bound on the wait time, in milliseconds.
+   *  @param intervalMillis The interval between successive tests, in milliseconds.
+   *  @param condition The condition to await.
+   *  @return The final result of the tested condition; if {@code false} then this invocation has timed out.
+   *  @throws InterruptedException If the thread was interrupted while waiting for the condition.
+   */
+  public static boolean bounded(int waitMillis, int intervalMillis, BooleanSupplier condition) throws InterruptedException {
     final long maxWait = System.nanoTime() + waitMillis * 1_000_000l;
     boolean result;
     for (;;) {
-      result = test.getAsBoolean();
+      result = condition.getAsBoolean();
       if (result) {
         return true;
       } else {

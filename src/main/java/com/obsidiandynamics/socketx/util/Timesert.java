@@ -13,7 +13,7 @@ import java.util.function.*;
  *  an assertion on the receiver immediately following a send in an asynchronous environment will likely fail. Using
  *  Timesert allows for assertions to fail up to a certain point, after which the {@link AssertionError} is percolated to
  *  the caller and the test case fails. This way Timesert allows you to write efficient, reproducible assertions without
- *  resorting to {@link Thread#sleep()}.
+ *  resorting to {@link Thread#sleep(long)}.
  */
 public final class Timesert {
   private int waitMillis;
@@ -24,15 +24,34 @@ public final class Timesert {
     this.waitMillis = waitMillis;
   }
   
+  /**
+   *  Waits up to the given number of milliseconds for the test condition to pass.
+   *  
+   *  @param waitMillis The upper bound on the wait time, in milliseconds.
+   *  @return A new {@link Timesert} instance for method chaining.
+   */
   public static Timesert wait(int waitMillis) {
     return new Timesert(waitMillis);
   }
   
+  /**
+   *  Applies a multiplier to the current value of {@link #waitMillis}. This is convenient
+   *  when the caller has no control over the creation of the {@link Timesert} instance.
+   *  
+   *  @param scale The multiplier to apply.
+   *  @return The current {@link Timesert} instance for method chaining.
+   */
   public Timesert withScale(int scale) {
     waitMillis *= scale;
     return this;
   }
   
+  /**
+   *  Sets the test interval.
+   *  
+   *  @param intervalMillis The interval between successive tests, in milliseconds.
+   *  @return The current {@link Timesert} instance for method chaining.
+   */
   public Timesert withIntervalMillis(int intervalMillis) {
     this.intervalMillis = intervalMillis;
     return this;
@@ -49,6 +68,12 @@ public final class Timesert {
     };
   }
   
+  /**
+   *  Blocks the caller until the given {@link Runnable} completes successfully,
+   *  without throwing an {@link AssertionError}.
+   *  
+   *  @param assertion The assertion to run.
+   */
   public void until(Runnable assertion) {
     try {
       if (! Await.bounded(waitMillis, intervalMillis, isAsserted(assertion))) {
@@ -59,6 +84,12 @@ public final class Timesert {
     }
   }
   
+  /**
+   *  Blocks the caller until the given {@link BooleanSupplier} evaluates to a
+   *  {@code true}.
+   *  
+   *  @param test The test to run.
+   */
   public void untilTrue(BooleanSupplier test) {
     until(fromBoolean(test));
   }

@@ -372,10 +372,21 @@ These two utilities are often used together. `Await`'s methods block the calling
 `Await` and `Timesert` are useful when writing and testing network applications, as events don't happen instantly. For example, when sending a message you might want to assert that it has been received. But running an assertion on the receiver immediately following a send in an asynchronous environment will likely fail. Using `Timesert` allows for assertions to fail up to a certain point, after which the `AssertionError` is percolated to the caller and the test case fails. This way `Timesert` allows you to write efficient, reproducible assertions without resorting to `Thread.sleep()`.
 
 ### `BinaryUtils`
+Provides conversion and printing utilities for binary data (byte arrays). The `dump()` method is the most useful, converting a byte array into a multi-line hex dump, reminiscent of the output of popular hex editors. The following is an example of its output:
+```
+20 00 15 73 6F 6D 65 2F   74 6F 70 69 63 2F 74 6F
+2F 70 75 62 6C 69 73 68   00 01 02
+```
 
 ### `ResourceLocator`
+Loads a specified resource URI as an `InputStream`. The URI can be of the form `file://...` - for reading files from the local file system, or `cp://...` - for reading files from the classpath (e.g. if the file has been packaged into an application JAR).
 
 ### `SocketUtils`
+Utilities for working with TCP sockets. Notable methods include -
+
+* `getAvailablePort(int preferredPort, int maxPort)` - searches for free (unbound) ports on the local machine, starting with the `preferredPort`, and up to the `maxPort`, inclusive. This method returns the first available port in the given range if one was found in a single complete pass. Alternatively, a `NoAvailablePortsException` unchecked exception is thrown if no unbound ports are available. Typically, this method is used when you need a spare port to bind to and where your application may have a preference for a specific port, but can still function correctly if a different port is assigned. This is often the case for testing scenarios.
+* `isLocalPortAvailable(int port)` - tests whether a single port is bound on the local machine. Behind the scenes, the method attempts to bind on the port and, if successful, sets the `SO_REUSEADDR` socket option before yielding the port, so that it may be used immediately.
+* `getPortUseCount(int port)` - used to query the number of uses of a given port, including the number of open socket connections, sockets in a `CLOSE_WAIT` state, as well as `LISTEN`. Effectively, this method counts the number of times a port appears in the output of a `netstat` command. Presently, this method relies on system utilities `netstat`, `grep` and `wc`, and can therefore only be used on a *NIX operating system, such as Linux, BSD, macOS, etc.
 
 ### `URIBuilder`
 

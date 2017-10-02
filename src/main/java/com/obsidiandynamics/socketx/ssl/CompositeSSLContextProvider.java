@@ -40,7 +40,7 @@ public class CompositeSSLContextProvider implements SSLContextProvider {
   /**
    *  Provides server defaults suitable for a development environment based on a self-signed certificate.<p>
    *  
-   *  The keystore is generated using the following command and placed in {@code src/main/resources}:<br/>
+   *  The keystore is generated using the following command and placed in {@code src/main/resources}:<br>
    *  {@code keytool -genkeypair -keyalg RSA -keysize 4096 -keystore keystore-dev.jks -keypass keypass -storepass storepass -validity 99999}
    *  
    *  @return An SSL context provider for a dev server.
