@@ -325,7 +325,7 @@ An alternative way of achieving the same outcome is to use the `XSendCallback` h
 ### A brief overview and rationale
 Socket.x is focused on WebSocket applications. And while the underlying providers may (and typically do) support a broader spectrum of HTTP, Socket.x does not attempt to solve this problem for the complete set of HTTP use cases. Crucially, this would run contrary to the Socket.x design philosophy - to offer an **uncompromised, WebSocket-centric programming model**, no other strings attached. That said, we do acknowledge that being able to host a basic Servlet alongside your WebSocket application can be somewhat convenient, particularly when dealing with load balancers and service discovery proxies - you might want to expose a simple status or health check endpoint on the same port as your main WebSocket server. Taking this further, it would be doubly convenient to leverage this capability _generically_, without dealing directly with the underlying provider.
 
-Socket.x adds **best-effort** Servlet 3.1 support. In other words, the Servlet 3.1 specification is supported _if and only if_ the underlying provider chooses to implement this, and it is under no obligation to do so in order to qualify as a fully-fledged Socket.x provider. Fortunately, both Undertow and Jetty providers support this feature natively. Netty, on the other hand, is not a Servlet container, and will throw an `UnsupportedOperationException` if you attempt to add a Servlet mapping.
+Socket.x adds **best-effort** Servlet 3.1 support. In other words, the Servlet 3.1 specification is supported _if and only if_ the underlying provider chooses to implement this, being under no obligation to do so in order to qualify as a fully-fledged Socket.x provider. Fortunately, both Undertow and Jetty providers support this feature natively. Netty, on the other hand, is not a Servlet container, and will throw an `UnsupportedOperationException` if you attempt to add a Servlet mapping.
 
 ### Adding a Servlet mapping
 A Servlet mapping is defined in `XServerConfig` using the `withServlets()` method, as illustrated in the snippet below. The complete code listing for this example can be found in `examples/src/main/java/servlet`.
@@ -366,7 +366,7 @@ public static void main(String[] args) throws Exception {
 }
 ```
 
-The `withServlets()` method takes in an a _varargs_ array of `XMappedServlet` objects. Each mapping specifies, at minimum, the path specification and the class of the Servlet - in our case a `HealthCheckServlet`. The life-cycle management of the Servlet is the responsibility of the Servlet container; it will be instantiated and initialised as required.
+The `withServlets()` method takes in an a _varargs_ array of `XMappedServlet` objects. Each mapping specifies, at minimum, the path specification and the class of the Servlet - in our case a `HealthCheckServlet`. It may also optionally specify a Servlet name. The life-cycle management of the Servlet is the responsibility of the Servlet container; it will be instantiated and initialised as required.
 
 Run the example above. If running from a desktop environment, it should automatically navigate to `http://localhost:8080/health` with the default browser. You have 60 seconds before the application terminates.
 
