@@ -18,13 +18,7 @@ public class XServerConfig extends XEndpointConfig<XServerConfig> {
   public String path = "/";
   
   @YInject
-  public int idleTimeoutMillis = 300_000;
-  
-  @YInject
   public int pingIntervalMillis = 60_000;
-  
-  @YInject
-  public int scanIntervalMillis = 1_000;
   
   @YInject
   public XMappedServlet[] servlets = new XMappedServlet[0];
