@@ -2,18 +2,23 @@ package com.obsidiandynamics.socketx.util;
 
 import java.util.function.*;
 
-/** 
- *  Adds timed assertion testing to {@link Await}. Unlike Awaitility, this implementation is robust in the face of a
- *  system clock that doesn't satisfy the monotonic non-decreasing assumption. (While rare, this assumption may be
- *  violated when using NTP, and is particularly problematic on macOS.)
+/**
+ *  Timesert (a portmanteau of <i>time</i> and <i>assert</i>) adds timed
+ *  assertion testing to {@link Await}. Unlike Awaitility, this implementation is
+ *  robust in the face of a system clock that doesn't satisfy the monotonic
+ *  non-decreasing assumption. (While rare, this assumption may be violated when
+ *  using NTP, and is particularly problematic on macOS.)
  *  <p>
  *  
- *  Timesert is useful when writing and testing network applications and asynchronous systems in general, as events don't
- *  happen instantly. For example, when sending a message you might want to assert that it has been received. But running
- *  an assertion on the receiver immediately following a send in an asynchronous environment will likely fail. Using
- *  Timesert allows for assertions to fail up to a certain point, after which the {@link AssertionError} is percolated to
- *  the caller and the test case fails. This way Timesert allows you to write efficient, reproducible assertions without
- *  resorting to {@link Thread#sleep(long)}.
+ *  Timesert is useful when writing and testing network applications and
+ *  asynchronous systems in general, as events don't happen instantly. For
+ *  example, when sending a message you might want to assert that it has been
+ *  received. But running an assertion on the receiver immediately following a
+ *  send in an asynchronous environment will likely fail. Using Timesert allows
+ *  for assertions to fail up to a certain point, after which the
+ *  {@link AssertionError} is percolated to the caller and the test case fails.
+ *  This way Timesert allows you to write efficient, reproducible assertions
+ *  without resorting to {@link Thread#sleep(long)}.
  */
 public final class Timesert {
   private int waitMillis;
