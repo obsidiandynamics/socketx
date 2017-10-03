@@ -1,4 +1,4 @@
-Socket.x
+<img src="https://raw.githubusercontent.com/wiki/obsidiandynamics/socketx/images/socketx-logo.png" width="90px" alt="logo"/> Socket.x
 ===
 [ ![Download](https://api.bintray.com/packages/obsidiandynamics/socketx/socketx-core/images/download.svg) ](https://bintray.com/obsidiandynamics/socketx/socketx-core/_latestVersion)
 
@@ -366,7 +366,7 @@ public static void main(String[] args) throws Exception {
 }
 ```
 
-The `withServlets()` method takes in an a _varargs_ array of `XMappedServlet` objects. Each mapping specifies, at minimum, the path specification and the class of the Servlet - in our case a `HealthCheckServlet`. It may also optionally specify a Servlet name. The life-cycle management of the Servlet is the responsibility of the Servlet container; it will be instantiated and initialised as required.
+The `withServlets()` method takes in an a _varargs_ array of `XMappedServlet` objects. Each mapping specifies, at minimum, the path specification and the class of the Servlet - in our case a `HealthCheckServlet`. It may also optionally specify the Servlet's name. The life-cycle management of the Servlet is the responsibility of the Servlet container; it will be instantiated and initialised as required.
 
 Run the example above. If running from a desktop environment, it should automatically navigate to `http://localhost:8080/health` with the default browser. You have 60 seconds before the application terminates.
 
