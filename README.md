@@ -6,7 +6,7 @@ Socket.x is a library for building high-performance, distributed [WebSocket](htt
 
 # Why Socket.x
 ## Speed and latency
-Socket.x has been benchmarked in excess of **1 million messages/second** on a 2010-era i7 quad-core CPU, using the [Undertow](http://undertow.io/) provider. [Applications built on Socket.x](#user-content-applications-using-socketx) have demonstrated message switching at **sub-millisecond latencies**.
+Socket.x has been benchmarked in excess of **2 million messages/second** on a 2010-era i7 quad-core CPU, using the [Undertow](http://undertow.io/) provider. [Applications built on Socket.x](#user-content-applications-using-socketx) have demonstrated message switching at **sub-millisecond latencies**.
 
 ## Asynchronous and event-driven API
 Socket.x APIs are designed around asynchronous, non-blocking and event-driven interactions. This allows you service a huge number of concurrent clients while utilising a relatively few number of OS threads. Applications built with Socket.x have achieved in excess of 1,000,000 connections per node. To put things into context, thread-bound Web servers usually top out between one and ten thousand connections.
