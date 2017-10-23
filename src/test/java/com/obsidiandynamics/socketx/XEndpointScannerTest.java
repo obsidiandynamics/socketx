@@ -1,7 +1,7 @@
 package com.obsidiandynamics.socketx;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.*;
@@ -13,15 +13,14 @@ import org.junit.runner.*;
 import org.junit.runners.*;
 
 import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.junit.*;
 import com.obsidiandynamics.socketx.util.*;
 
 @RunWith(Parameterized.class)
 public final class XEndpointScannerTest {
-  private static final int REPEAT = 1;
-  
   @Parameterized.Parameters
   public static List<Object[]> data() {
-    return Arrays.asList(new Object[REPEAT][0]);
+    return TestCycle.once();
   }
   
   private XEndpointScanner<XEndpoint> scanner;

@@ -86,7 +86,7 @@ public final class NettyEndpointTest {
     final Throwable cause = new IOException("Boom");
     when(f.isSuccess()).thenReturn(false);
     when(f.cause()).thenReturn(cause);
-    when(f.addListener(notNull(GenericFutureListener.class))).thenAnswer(invocation -> {
+    when(f.addListener(notNull())).thenAnswer(invocation -> {
       final GenericFutureListener<ChannelFuture> listener = 
           (GenericFutureListener<ChannelFuture>) invocation.getArguments()[0];
       listener.operationComplete(f);

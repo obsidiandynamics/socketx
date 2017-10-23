@@ -1,9 +1,7 @@
 package com.obsidiandynamics.socketx;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-
-import java.nio.*;
 
 import org.junit.*;
 
@@ -58,8 +56,8 @@ public final class PingTest extends BaseClientServerTest {
   
   private void awaitConnect(XEndpointListener<XEndpoint> serverListener, XEndpointListener<XEndpoint> clientListener) {
     SocketUtils.await().until(() -> {
-      verify(serverListener).onConnect(notNull(XEndpoint.class));
-      verify(clientListener).onConnect(notNull(XEndpoint.class));
+      verify(serverListener).onConnect(notNull());
+      verify(clientListener).onConnect(notNull());
     });
   }
 
@@ -77,8 +75,8 @@ public final class PingTest extends BaseClientServerTest {
     serverEndpoint.sendPing();
     
     SocketUtils.await().until(() -> {
-      verify(clientListener, times(1)).onPing(notNull(XEndpoint.class), notNull(ByteBuffer.class));
-      verify(serverListener, times(1)).onPong(notNull(XEndpoint.class), notNull(ByteBuffer.class));
+      verify(clientListener, times(1)).onPing(notNull(), notNull());
+      verify(serverListener, times(1)).onPong(notNull(), notNull());
     });
   }
 
@@ -95,8 +93,8 @@ public final class PingTest extends BaseClientServerTest {
     clientEndpoint.sendPing();
     
     SocketUtils.await().until(() -> {
-      verify(serverListener, times(1)).onPing(notNull(XEndpoint.class), notNull(ByteBuffer.class));
-      verify(clientListener, times(1)).onPong(notNull(XEndpoint.class), notNull(ByteBuffer.class));
+      verify(serverListener, times(1)).onPing(notNull(), notNull());
+      verify(clientListener, times(1)).onPong(notNull(), notNull());
     });
   }
 }

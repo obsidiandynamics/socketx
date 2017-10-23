@@ -1,9 +1,7 @@
 package com.obsidiandynamics.socketx;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-
-import java.nio.*;
 
 import org.junit.*;
 
@@ -56,13 +54,13 @@ public final class KeepAliveTest extends BaseClientServerTest {
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     openClientEndpoint(false, serverConfig.port, clientListener);
     SocketUtils.await().until(() -> {
-      verify(serverListener).onConnect(notNull(XEndpoint.class));
-      verify(clientListener).onConnect(notNull(XEndpoint.class));
+      verify(serverListener).onConnect(notNull());
+      verify(clientListener).onConnect(notNull());
     });
     
     SocketUtils.await().until(() -> {
-      verify(clientListener, atLeastOnce()).onPing(notNull(XEndpoint.class), notNull(ByteBuffer.class));
-      verify(serverListener, atLeastOnce()).onPong(notNull(XEndpoint.class), notNull(ByteBuffer.class));
+      verify(clientListener, atLeastOnce()).onPing(notNull(), notNull());
+      verify(serverListener, atLeastOnce()).onPong(notNull(), notNull());
     });
   }
 }

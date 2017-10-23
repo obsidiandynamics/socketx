@@ -10,7 +10,7 @@ import javax.net.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 import com.obsidiandynamics.socketx.util.SocketUtils.*;
 
 public final class SocketUtilsTest {
@@ -37,7 +37,7 @@ public final class SocketUtilsTest {
   
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(SocketUtils.class);
+    Assertions.assertUtilityClassWellDefined(SocketUtils.class);
   }
   
   @Test
@@ -45,7 +45,7 @@ public final class SocketUtilsTest {
     SocketUtils.execute("netstat -n | wc -l");
   }
   
-  @Test(expected=ProcessExecutionException.class)
+  @Test(expected=CommandExecutionException.class)
   public void executeFailTest() {
     SocketUtils.execute("abcdefghijk-gibberish");
   }

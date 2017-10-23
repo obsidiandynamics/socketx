@@ -2,7 +2,7 @@ package com.obsidiandynamics.socketx;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
@@ -13,6 +13,7 @@ import org.junit.runners.*;
 import org.mockito.*;
 import org.slf4j.*;
 
+import com.obsidiandynamics.junit.*;
 import com.obsidiandynamics.socketx.jetty.*;
 import com.obsidiandynamics.socketx.netty.*;
 import com.obsidiandynamics.socketx.ssl.*;
@@ -142,7 +143,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       endpoint.setContext("testServerContext");
       assertEquals("testServerContext", endpoint.getContext());
       return null;
-    }).when(serverListener.mock).onConnect(notNull(XEndpoint.class));
+    }).when(serverListener.mock).onConnect(notNull());
     createServer(serverFactory, serverConfig, serverListener.loggingListener);
     assertNotNull(server.getConfig());
 
@@ -165,8 +166,8 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
 
     // assert connections on server
     SocketUtils.await().until(() -> {
-      verify(clientListener.mock, times(connections)).onConnect(notNull(XEndpoint.class));
-      verify(serverListener.mock, times(connections)).onConnect(notNull(XEndpoint.class));
+      verify(clientListener.mock, times(connections)).onConnect(notNull());
+      verify(serverListener.mock, times(connections)).onConnect(notNull());
     });
     
     final Collection<? extends XEndpoint> toDisconnect = serverDisconnect 
@@ -192,8 +193,8 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     
     // assert disconnections on server
     SocketUtils.await().until(() -> {
-      verify(clientListener.mock, times(connections)).onClose(notNull(XEndpoint.class));
-      verify(serverListener.mock, times(connections)).onClose(notNull(XEndpoint.class));
+      verify(clientListener.mock, times(connections)).onClose(notNull());
+      verify(serverListener.mock, times(connections)).onClose(notNull());
       TestCase.assertEquals(0, client.getEndpoints().size());
       TestCase.assertEquals(0, server.getEndpointManager().getEndpoints().size());
     });

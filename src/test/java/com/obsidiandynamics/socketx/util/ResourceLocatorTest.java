@@ -7,7 +7,7 @@ import java.net.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class ResourceLocatorTest {
   private InputStream in;
@@ -19,7 +19,7 @@ public final class ResourceLocatorTest {
   
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(ResourceLocator.class);
+    Assertions.assertUtilityClassWellDefined(ResourceLocator.class);
   }
   
   @Test

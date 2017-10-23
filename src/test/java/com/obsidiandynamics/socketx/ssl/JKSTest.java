@@ -11,13 +11,13 @@ import javax.net.ssl.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 import com.obsidiandynamics.socketx.util.*;
 
 public final class JKSTest {
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(JKS.class);
+    Assertions.assertUtilityClassWellDefined(JKS.class);
   }
   
   @Test

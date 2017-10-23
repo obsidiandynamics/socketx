@@ -8,7 +8,7 @@ import org.mockito.*;
 import com.obsidiandynamics.socketx.XEndpointLambdaListener.*;
 
 /**
- *  Allows for incremental composition of a {@link XEndpointListener} by including
+ *  Allows for incremental composition of an {@link XEndpointListener} by including
  *  the necessary Lambda functions corresponding to the callbacks of interest.<p>
  *  
  *  This is a functional analogue of implementing the {@link XEndpointListener} interface, 

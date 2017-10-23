@@ -2,14 +2,14 @@ package com.obsidiandynamics.socketx;
 
 import org.junit.Test;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 import junit.framework.*;
 
 public final class XMappedServletTest {
   @Test
   public void testToString() {
-    TestSupport.assertToString(new XMappedServlet("/test", "health", HealthServlet.class));
+    Assertions.assertToStringOverride(new XMappedServlet("/test", "health", HealthServlet.class));
   }
 
   @Test

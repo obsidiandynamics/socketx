@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class BinaryUtilsTest {
   @Test
@@ -46,7 +46,7 @@ public final class BinaryUtilsTest {
   
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(BinaryUtils.class);
+    Assertions.assertUtilityClassWellDefined(BinaryUtils.class);
   }
   
   @Test

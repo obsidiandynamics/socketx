@@ -48,9 +48,9 @@ public abstract class BaseClientServerTest implements TestSupport {
   @SuppressWarnings("unchecked")
   protected final void createServer(XServerFactory<? extends XEndpoint> serverFactory,
                                     XServerConfig config, XEndpointListener<XEndpoint> serverListener) throws Exception {
-    server = serverFactory.create(config, Mocks.logger(XEndpointListener.class, 
-                                                       serverListener,
-                                                       new LoggingInterceptor<>("s: ")));
+    server = serverFactory.create(config, InterceptingProxy.of(XEndpointListener.class, 
+                                                               serverListener,
+                                                               new LoggingInterceptor<>("s: ")));
   }
   
   protected final void createClient(XClientFactory<? extends XEndpoint> clientFactory, XClientConfig config) throws Exception {
@@ -60,9 +60,9 @@ public abstract class BaseClientServerTest implements TestSupport {
   @SuppressWarnings("unchecked")
   protected final XEndpoint openClientEndpoint(boolean https, int port, XEndpointListener<XEndpoint> clientListener) throws URISyntaxException, Exception {
     return client.connect(new URI(String.format("%s://localhost:%d/", https ? "wss" : "ws", port)),
-                          Mocks.logger(XEndpointListener.class, 
-                                       clientListener,
-                                       new LoggingInterceptor<>("c: ")));
+                          InterceptingProxy.of(XEndpointListener.class, 
+                                               clientListener,
+                                               new LoggingInterceptor<>("c: ")));
   }
   
   protected final boolean hasServerEndpoint() {

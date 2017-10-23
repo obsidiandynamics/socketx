@@ -7,6 +7,7 @@ import org.junit.runner.*;
 import org.junit.runners.*;
 import org.mockito.*;
 
+import com.obsidiandynamics.junit.*;
 import com.obsidiandynamics.socketx.jetty.*;
 import com.obsidiandynamics.socketx.netty.*;
 import com.obsidiandynamics.socketx.undertow.*;
@@ -63,14 +64,14 @@ public final class AbruptCloseTest extends BaseClientServerTest {
     final XEndpointListener<XEndpoint> clientListener = createMockListener();
     final XEndpoint endpoint = openClientEndpoint(false, serverConfig.port, clientListener);
     SocketUtils.await().until(() -> {
-      Mockito.verify(serverListener).onConnect(Mockito.notNull(XEndpoint.class));
-      Mockito.verify(clientListener).onConnect(Mockito.notNull(XEndpoint.class));
+      Mockito.verify(serverListener).onConnect(Mockito.notNull());
+      Mockito.verify(clientListener).onConnect(Mockito.notNull());
     });
     
     endpoint.terminate();
     SocketUtils.await().until(() -> {
-      Mockito.verify(serverListener).onClose(Mockito.notNull(XEndpoint.class));
-      Mockito.verify(clientListener).onClose(Mockito.notNull(XEndpoint.class));
+      Mockito.verify(serverListener).onClose(Mockito.notNull());
+      Mockito.verify(clientListener).onClose(Mockito.notNull());
     });
   }
 
@@ -93,8 +94,8 @@ public final class AbruptCloseTest extends BaseClientServerTest {
     final XEndpoint endpoint = getServerEndpoint();
     endpoint.terminate();
     SocketUtils.await().until(() -> {
-      Mockito.verify(serverListener).onClose(Mockito.notNull(XEndpoint.class));
-      Mockito.verify(clientListener).onClose(Mockito.notNull(XEndpoint.class));
+      Mockito.verify(serverListener).onClose(Mockito.notNull());
+      Mockito.verify(clientListener).onClose(Mockito.notNull());
     });
   }
 }

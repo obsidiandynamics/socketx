@@ -10,6 +10,7 @@ import org.junit.*;
 
 import com.obsidiandynamics.indigo.benchmark.*;
 import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.shell.*;
 import com.obsidiandynamics.socketx.attribute.*;
 import com.obsidiandynamics.socketx.fake.*;
 import com.obsidiandynamics.socketx.jetty.*;
@@ -481,7 +482,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   public static void main(String[] args) throws Exception {
-    BashInteractor.Ulimit.main(null);
+    BourneUtils.run("ulimit -Sa", null, true, System.out::println);
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     try {
       new Config() {{

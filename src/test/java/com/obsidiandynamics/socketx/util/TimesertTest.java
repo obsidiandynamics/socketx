@@ -8,7 +8,7 @@ import com.obsidiandynamics.indigo.util.*;
 
 import junit.framework.*;
 
-public final class AsserterTest {
+public final class TimesertTest {
   @Test
   public void testPass() {
     Timesert.wait(10).withScale(2).withIntervalMillis(1).until(() -> {});

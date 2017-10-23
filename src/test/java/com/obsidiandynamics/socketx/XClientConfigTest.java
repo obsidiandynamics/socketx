@@ -2,11 +2,11 @@ package com.obsidiandynamics.socketx;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class XClientConfigTest {
   @Test
   public void testToString() {
-    TestSupport.assertToString(new XClientConfig());
+    Assertions.assertToStringOverride(new XClientConfig());
   }
 }

@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.*;
 
 import org.slf4j.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.shell.*;
 
 /**
  *  Utilities for working with TCP sockets.
@@ -108,7 +108,7 @@ public final class SocketUtils {
    *  
    *  @param port The port to test
    *  @return The number of current uses of this port.
-   *  @exception ProcessExecutionException If the command failed to execute.
+   *  @exception CommandExecutionException If the command failed to execute.
    */
   public static int getPortUseCount(int port) {
     final String cmdTemplate = "which netstat > /dev/null && netstat -an | grep \"[\\.|:]%d \" | wc -l";
@@ -116,20 +116,21 @@ public final class SocketUtils {
   }
   
   /**
-   *  Thrown if an executed process terminated with a non-zero exit code.
+   *  Thrown if an executed command terminated with a non-zero exit code.
    */
-  public static final class ProcessExecutionException extends RuntimeException {
+  public static final class CommandExecutionException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    ProcessExecutionException(String m) { super(m); }
+    CommandExecutionException(String m) { super(m); }
   }
   
-  static String execute(String cmd) {
-    final AtomicReference<String> outputHolder = new AtomicReference<>();
-    final int exitCode = BashInteractor.execute(cmd, true, outputHolder::set);
+  static String execute(String command) {
+    final StringBuilder sink = new StringBuilder();
+    
+    final int exitCode = Shell.builder().execute(command).await();
     if (exitCode != 0) {
-      throw new ProcessExecutionException(String.format("Command '%s' exited with code %d", cmd, exitCode));
+      throw new CommandExecutionException(String.format("Command '%s' exited with code %d", command, exitCode));
     }
-    return outputHolder.get();
+    return sink.toString();
   }
   
   /**

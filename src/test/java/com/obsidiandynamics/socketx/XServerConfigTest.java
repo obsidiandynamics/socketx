@@ -4,12 +4,12 @@ import static junit.framework.TestCase.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class XServerConfigTest {
   @Test
   public void testToString() {
-    TestSupport.assertToString(new XServerConfig());
+    Assertions.assertToStringOverride(new XServerConfig());
   }
 
   @Test

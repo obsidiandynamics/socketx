@@ -56,7 +56,7 @@ public final class JettyEndpointTest {
       final WriteCallback writeCallback = (WriteCallback) invocation.getArguments()[1];
       writeCallback.writeFailed(cause);
       return null;
-    }).when(remote).sendString(notNull(String.class), notNull(WriteCallback.class));
+    }).when(remote).sendString(notNull(), notNull());
     
     final XSendCallback callback = mock(XSendCallback.class);
     endpoint.send("test", callback);

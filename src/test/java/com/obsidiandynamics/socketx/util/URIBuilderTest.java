@@ -6,8 +6,7 @@ import java.net.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
-
+import com.obsidiandynamics.assertion.*;
 import com.obsidiandynamics.socketx.util.URIBuilder.*;
 
 public final class URIBuilderTest {
@@ -17,7 +16,7 @@ public final class URIBuilderTest {
 
   @Test
   public void testPortsToString() {
-    TestSupport.assertToString(getPorts());
+    Assertions.assertToStringOverride(getPorts());
   }
 
   @Test

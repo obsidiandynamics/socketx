@@ -1,11 +1,12 @@
 package com.obsidiandynamics.socketx.util;
 
-import static com.obsidiandynamics.indigo.util.TestSupport.*;
 import static junit.framework.TestCase.*;
 
 import java.util.concurrent.*;
 
 import org.junit.*;
+
+import com.obsidiandynamics.assertion.*;
 
 public final class AwaitTest {
   @Test(expected=InterruptedException.class)
@@ -56,6 +57,6 @@ public final class AwaitTest {
 
   @Test
   public void testConformance() throws Exception {
-    assertUtilityClassWellDefined(Await.class);
+    Assertions.assertUtilityClassWellDefined(Await.class);
   }
 }

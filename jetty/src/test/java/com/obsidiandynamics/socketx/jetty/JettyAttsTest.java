@@ -2,11 +2,11 @@ package com.obsidiandynamics.socketx.jetty;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class JettyAttsTest {
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(JettyAtts.class);
+    Assertions.assertUtilityClassWellDefined(JettyAtts.class);
   }
 }

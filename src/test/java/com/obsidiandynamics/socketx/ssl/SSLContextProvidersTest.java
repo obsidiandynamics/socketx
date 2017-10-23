@@ -6,12 +6,12 @@ import javax.net.ssl.*;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class SSLContextProvidersTest {
   private static void assertBasics(SSLContextProvider provider) throws Exception {
     assertNotNull(provider.getSSLContext());
-    TestSupport.assertToString(provider);
+    Assertions.assertToStringOverride(provider);
   }
   
   @Test
@@ -47,14 +47,14 @@ public final class SSLContextProvidersTest {
   public void testNullKey() {
     final NullKeyManagerProvider keyProvider = new NullKeyManagerProvider();
     assertNull(keyProvider.getKeyManagers());
-    TestSupport.assertToString(keyProvider);
+    Assertions.assertToStringOverride(keyProvider);
   }
   
   @Test
   public void testNullTrust() {
     final NullTrustManagerProvider trustProvider = new NullTrustManagerProvider();
     assertNull(trustProvider.getTrustManagers());
-    TestSupport.assertToString(trustProvider);
+    Assertions.assertToStringOverride(trustProvider);
   }
   
   @Test
@@ -67,7 +67,7 @@ public final class SSLContextProvidersTest {
     assertEquals(0, trustManager.getAcceptedIssuers().length);
     trustManager.checkServerTrusted(null, null);
     trustManager.checkClientTrusted(null, null);
-    TestSupport.assertToString(trustProvider);
+    Assertions.assertToStringOverride(trustProvider);
   }
   
   @Test
@@ -77,7 +77,7 @@ public final class SSLContextProvidersTest {
         .withStorePassword("storepass")
         .withKeyPassword("keypass");
     assertNotNull(keyProvider.getKeyManagers());
-    TestSupport.assertToString(keyProvider);
+    Assertions.assertToStringOverride(keyProvider);
   }
   
   @Test
@@ -86,6 +86,6 @@ public final class SSLContextProvidersTest {
         .withLocation("cp://keystore-dev.jks")
         .withStorePassword("storepass");
     assertNotNull(trustProvider.getTrustManagers());
-    TestSupport.assertToString(trustProvider);
+    Assertions.assertToStringOverride(trustProvider);
   }
 }

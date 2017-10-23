@@ -1,6 +1,6 @@
 package com.obsidiandynamics.socketx;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.nio.*;
@@ -85,8 +85,8 @@ public final class EchoTest extends BaseClientServerTest {
     // assert receival of echo on clients
     final int expected = connections * messages;
     SocketUtils.await().until(() -> {
-      verify(clientListener, times(expected)).onText(notNull(XEndpoint.class), eq("test"));
-      verify(clientListener, times(expected)).onBinary(notNull(XEndpoint.class), eq(toBuffer("test")));
+      verify(clientListener, times(expected)).onText(notNull(), eq("test"));
+      verify(clientListener, times(expected)).onBinary(notNull(), eq(toBuffer("test")));
     });
 
     SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);

@@ -2,11 +2,11 @@ package com.obsidiandynamics.socketx.undertow;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class UndertowAttsTest {
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(UndertowAtts.class);
+    Assertions.assertUtilityClassWellDefined(UndertowAtts.class);
   }
 }

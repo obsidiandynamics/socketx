@@ -2,11 +2,11 @@ package com.obsidiandynamics.socketx.netty;
 
 import org.junit.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.assertion.*;
 
 public final class NettyAttsTest {
   @Test
   public void testConformance() throws Exception {
-    TestSupport.assertUtilityClassWellDefined(NettyAtts.class);
+    Assertions.assertUtilityClassWellDefined(NettyAtts.class);
   }
 }
