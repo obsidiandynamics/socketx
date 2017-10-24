@@ -126,7 +126,7 @@ public final class SocketUtils {
   static String execute(String command) {
     final StringBuilder sink = new StringBuilder();
     
-    final int exitCode = Shell.builder().execute(command).await();
+    final int exitCode = Shell.builder().execute(command).pipeTo(sink::append).await();
     if (exitCode != 0) {
       throw new CommandExecutionException(String.format("Command '%s' exited with code %d", command, exitCode));
     }

@@ -7,9 +7,8 @@ import java.security.cert.*;
 
 import javax.net.ssl.*;
 
-import com.obsidiandynamics.yconf.*;
-
 import com.obsidiandynamics.socketx.util.*;
+import com.obsidiandynamics.yconf.*;
 
 @Y
 public class JKSKeyManagerProvider implements KeyManagerProvider {

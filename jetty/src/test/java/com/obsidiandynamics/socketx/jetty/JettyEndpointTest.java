@@ -1,7 +1,7 @@
 package com.obsidiandynamics.socketx.jetty;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.*;

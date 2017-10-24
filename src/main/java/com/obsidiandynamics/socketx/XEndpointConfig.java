@@ -2,9 +2,8 @@ package com.obsidiandynamics.socketx;
 
 import java.util.*;
 
-import com.obsidiandynamics.yconf.*;
-
 import com.obsidiandynamics.socketx.ssl.*;
+import com.obsidiandynamics.yconf.*;
 
 @Y
 public abstract class XEndpointConfig<C extends XEndpointConfig<C>> {
