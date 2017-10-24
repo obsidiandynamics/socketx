@@ -19,7 +19,7 @@ Having a standard API isn't just for provider portability. It gives you a **clea
 
 # Getting Started
 ## Get the binaries
-Socket.x builds are hosted on JCenter (Maven users may need to add the JCenter repository to their POM). Simply add the following snippet to your build file (replacing the version number in the snippet with the version shown on the Download badge at the top of this README).
+Socket.x builds are hosted on JCenter (Maven users may need to add the JCenter repository to their POM). Simply add the following snippet to your build file. Replace the version placeholder `x.y.z` in the snippet with the version shown on the Download badge at the top of this README.
 
 For Maven:
 
@@ -27,7 +27,7 @@ For Maven:
 <dependency>
   <groupId>com.obsidiandynamics.socketx</groupId>
   <artifactId>socketx-core</artifactId>
-  <version>0.1.0</version>
+  <version>x.y.z</version>
   <type>pom</type>
 </dependency>
 ```
@@ -35,7 +35,7 @@ For Maven:
 For Gradle:
 
 ```groovy
-compile 'com.obsidiandynamics.socketx:socketx-core:0.1.0'
+compile 'com.obsidiandynamics.socketx:socketx-core:x.y.z'
 ```
 
 The import above only gets you the Socket.x core API. In addition, you'll need to import at least one provider. We recommend Undertow, purely due to its blistering performance and solid standards-compliance.
