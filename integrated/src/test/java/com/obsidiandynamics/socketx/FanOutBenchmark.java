@@ -482,7 +482,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   public static void main(String[] args) throws Exception {
-    BourneUtils.run("ulimit -Sa", null, true, System.out::println);
+    BourneUtils.run("ulimit -Sa", null, true, System.out::print);
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     try {
       new Config() {{
