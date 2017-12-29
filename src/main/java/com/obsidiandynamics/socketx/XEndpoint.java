@@ -5,7 +5,7 @@ import java.net.*;
 import java.nio.*;
 import java.time.*;
 
-import com.obsidiandynamics.socketx.util.*;
+import com.obsidiandynamics.await.*;
 
 /**
  *  The abstract definition of a WebSocket endpoint.

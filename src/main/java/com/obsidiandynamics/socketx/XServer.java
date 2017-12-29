@@ -1,6 +1,6 @@
 package com.obsidiandynamics.socketx;
 
-import com.obsidiandynamics.socketx.util.*;
+import com.obsidiandynamics.await.*;
 
 /**
  *  Listens for incoming connections.

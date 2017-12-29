@@ -3,7 +3,7 @@ package com.obsidiandynamics.socketx;
 import java.net.*;
 import java.util.*;
 
-import com.obsidiandynamics.socketx.util.*;
+import com.obsidiandynamics.await.*;
 
 /**
  *  A conduit for opening and maintaining client connections.

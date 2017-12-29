@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.*;
 
 import org.slf4j.*;
 
+import com.obsidiandynamics.await.*;
 import com.obsidiandynamics.shell.*;
 
 /**
