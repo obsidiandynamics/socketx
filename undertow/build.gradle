@@ -3,8 +3,8 @@ version = project(":").version
 
 dependencies {
   compile project(":")
-  compile "io.undertow:undertow-core:1.4.20.Final"
-  compile "io.undertow:undertow-websockets-jsr:1.4.20.Final"
+  compile "io.undertow:undertow-core:2.0.9.Final"
+  compile "io.undertow:undertow-websockets-jsr:2.0.9.Final"
   
   testCompile project(":").sourceSets.test.output
 }

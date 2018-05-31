@@ -3,8 +3,8 @@ version = project(":").version
 
 dependencies {
   compile project(":")
-  compile "org.eclipse.jetty.websocket:websocket-server:9.4.6.v20170531"
-  compile "org.eclipse.jetty.websocket:websocket-client:9.4.6.v20170531"
+  compile "org.eclipse.jetty.websocket:websocket-server:9.4.10.v20180503"
+  compile "org.eclipse.jetty.websocket:websocket-client:9.4.10.v20180503"
 }
 
 jar {
