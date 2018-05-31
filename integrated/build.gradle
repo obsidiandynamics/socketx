@@ -1,20 +1,20 @@
-def packageName = 'socketx-integrated'
+def packageName = "socketx-integrated"
 
 dependencies {
-  testCompile project(':socketx-undertow')
-  testCompile project(':socketx-jetty')
-  testCompile project(':socketx-netty')
-  testCompile 'org.apache.httpcomponents:httpclient:4.5.3'
+  testCompile project(":socketx-undertow")
+  testCompile project(":socketx-jetty")
+  testCompile project(":socketx-netty")
+  testCompile "org.apache.httpcomponents:httpclient:4.5.3"
 }
 
 jar {
   baseName packageName
 }
 
-def perfJvmArgs = '-server -XX:-MaxFDLimit -XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark -XX:-UseBiasedLocking -Xms1G -Xmx2G -Xss1M -XX:+UseParallelGC'
+def perfJvmArgs = "-server -XX:-MaxFDLimit -XX:+TieredCompilation -XX:+UseNUMA -XX:+UseCondCardMark -XX:-UseBiasedLocking -Xms1G -Xmx2G -Xss1M -XX:+UseParallelGC"
 
 task fanOutBench(type: JavaExec) {
   classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
-  jvmArgs = Arrays.asList perfJvmArgs.split(' ')
-  main = 'com.obsidiandynamics.socketx.FanOutBenchmark'
+  jvmArgs = Arrays.asList perfJvmArgs.split(" ")
+  main = "com.obsidiandynamics.socketx.FanOutBenchmark"
 }
