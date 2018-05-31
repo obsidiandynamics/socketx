@@ -34,7 +34,7 @@ public final class XEndpointScanner<E extends XEndpoint> extends Thread implemen
           } else if (pingIntervalMillis != 0) {
             final long lastActivity = endpoint.getLastActivityTime();
             if (now - lastActivity > pingIntervalMillis) {
-              if (LOG.isTraceEnabled()) LOG.trace("Pinging {}", endpoint);
+              LOG.trace("Pinging {}", endpoint);
               endpoint.sendPing();
             }
           }
