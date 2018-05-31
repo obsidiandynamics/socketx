@@ -115,12 +115,12 @@ def packageName = "socketx-core"
 
 dependencies {
   compile "org.slf4j:slf4j-api:1.7.25"
-  compile "com.obsidiandynamics.yconf:yconf-core:0.2.1"
-  compile "com.obsidiandynamics.fulcrum:fulcrum-await:0.4.0"
-  compile "com.obsidiandynamics.fulcrum:fulcrum-shell:0.4.0"
+  compile "com.obsidiandynamics.yconf:yconf-core:${yconfVersion}"
+  compile "com.obsidiandynamics.fulcrum:fulcrum-await:${fulcrumVersion}"
+  compile "com.obsidiandynamics.fulcrum:fulcrum-shell:${fulcrumVersion}"
   compile "javax.servlet:javax.servlet-api:3.1.0"
   
-  testCompile "com.obsidiandynamics.yconf:yconf-snakeyaml:0.2.1"
+  testCompile "com.obsidiandynamics.yconf:yconf-snakeyaml:${yconfVersion}"
 }
 
 jar {
