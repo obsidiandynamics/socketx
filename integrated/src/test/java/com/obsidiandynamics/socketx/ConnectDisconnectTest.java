@@ -24,7 +24,7 @@ import junit.framework.*;
 
 @RunWith(Parameterized.class)
 public final class ConnectDisconnectTest extends BaseClientServerTest {
-  private static final Logger LOG = Mockito.mock(Logger.class);
+  private static final Logger log = Mockito.mock(Logger.class);
   
   private static final boolean ABRUPT = false;
   private static final boolean GRACEFUL = true;
@@ -137,7 +137,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
                     XClientFactory<? extends XEndpoint> clientFactory) throws Exception {
     final XServerConfig serverConfig = getDefaultServerConfig(https)
         .withScanInterval(1);
-    final Slf4jMockListener serverListener = createSlf4jMockListener(LOG, "s: ");
+    final Slf4jMockListener serverListener = createSlf4jMockListener(log, "s: ");
     doAnswer(invocation -> {
       final XEndpoint endpoint = (XEndpoint) invocation.getArguments()[0];
       endpoint.setContext("testServerContext");
@@ -152,7 +152,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
         .withSSLContextProvider(CompositeSSLContextProvider.getDevClientDefault());
     createClient(clientFactory, clientConfig);
     assertNotNull(client.getConfig());
-    final Slf4jMockListener clientListener = createSlf4jMockListener(LOG, "c: ");
+    final Slf4jMockListener clientListener = createSlf4jMockListener(log, "c: ");
     final List<XEndpoint> endpoints = new ArrayList<>(connections);
     
     // connect all endpoints

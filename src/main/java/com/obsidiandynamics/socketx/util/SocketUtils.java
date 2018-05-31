@@ -13,7 +13,7 @@ import com.obsidiandynamics.shell.*;
  *  Utilities for working with TCP sockets.
  */
 public final class SocketUtils {
-  private static Logger LOG = LoggerFactory.getLogger(SocketUtils.class);
+  private static Logger log = LoggerFactory.getLogger(SocketUtils.class);
   
   private static int DEF_MAX_PORT = 49151;
   private static int DEF_PORT_DRAIN_INTERVAL_MILLIS = 100;
@@ -78,7 +78,7 @@ public final class SocketUtils {
         return port;
       } else {
         port++;
-        LOG.debug("Port {} unavailable for binding; trying {}", preferredPort, port);
+        log.debug("Port {} unavailable for binding; trying {}", preferredPort, port);
       }
     }
     throw new NoAvailablePortsException("No available ports in the range " + preferredPort + " - " + maxPort);
@@ -161,7 +161,7 @@ public final class SocketUtils {
       final int useCount = getPortUseCount(port);
       if (useCount > maxUseCount && ! logged.get()) {
         logged.set(true);
-        LOG.debug("Port {} at {} connections; draining to {}", port, useCount, maxUseCount);
+        log.debug("Port {} at {} connections; draining to {}", port, useCount, maxUseCount);
       }
       return useCount <= maxUseCount;
     });

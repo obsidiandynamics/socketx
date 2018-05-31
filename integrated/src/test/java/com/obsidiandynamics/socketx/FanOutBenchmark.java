@@ -30,7 +30,7 @@ import com.obsidiandynamics.socketx.util.URIBuilder.*;
 public final class FanOutBenchmark implements TestSupport {
   private static final int PREFERRED_PORT = 8090;
   private static final int PREFERRED_HTTPS_PORT = 8543;
-  private static final int BACKLOG_HWM = 100_000;
+  private static final int BACKlog_HWM = 100_000;
   private static final int BYTES = 16;
   private static final int IDLE_TIMEOUT = 0;
   
@@ -80,7 +80,7 @@ public final class FanOutBenchmark implements TestSupport {
       m = 10;
       bytes = BYTES;
       flush = false;
-      backlogHwm = BACKLOG_HWM;
+      backlogHwm = BACKlog_HWM;
       warmupFrac = 0.10f;
       log = new LogConfig() {{
         summary = stages = TestSupport.LOG;
@@ -498,7 +498,7 @@ public final class FanOutBenchmark implements TestSupport {
         echo = false;
         flush = false;
         text = false;
-        backlogHwm = BACKLOG_HWM;
+        backlogHwm = BACKlog_HWM;
         warmupFrac = 0.10f;
         log = new LogConfig() {{
           stages = false;

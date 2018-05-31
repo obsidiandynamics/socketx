@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 import org.slf4j.*;
 
 public final class XEndpointScanner<E extends XEndpoint> extends Thread implements AutoCloseable {
-  private static final Logger LOG = LoggerFactory.getLogger(XEndpointScanner.class);
+  private static final Logger log = LoggerFactory.getLogger(XEndpointScanner.class);
   
   private final int scanIntervalMillis;
   private final int pingIntervalMillis;
@@ -29,18 +29,18 @@ public final class XEndpointScanner<E extends XEndpoint> extends Thread implemen
         final long now = System.currentTimeMillis();
         for (E endpoint : endpoints) {
           if (! endpoint.isOpen()) {
-            LOG.debug("Terminating defunct endpoint {}", endpoint);
+            log.debug("Terminating defunct endpoint {}", endpoint);
             endpoint.terminate();
           } else if (pingIntervalMillis != 0) {
             final long lastActivity = endpoint.getLastActivityTime();
             if (now - lastActivity > pingIntervalMillis) {
-              LOG.trace("Pinging {}", endpoint);
+              log.trace("Pinging {}", endpoint);
               endpoint.sendPing();
             }
           }
         }
       } catch (Exception e) {
-        LOG.error("Unexpected error", e);
+        log.error("Unexpected error", e);
       }
       
       try {
