@@ -1,6 +1,8 @@
 <img src="https://raw.githubusercontent.com/wiki/obsidiandynamics/socketx/images/socketx-logo.png" width="90px" alt="logo"/> Socket.x
 ===
-[ ![Download](https://api.bintray.com/packages/obsidiandynamics/socketx/socketx-core/images/download.svg) ](https://bintray.com/obsidiandynamics/socketx/socketx-core/_latestVersion)
+[![Download](https://api.bintray.com/packages/obsidiandynamics/socketx/socketx-core/images/download.svg) ](https://bintray.com/obsidiandynamics/socketx/socketx-core/_latestVersion)
+[![Build](https://travis-ci.org/obsidiandynamics/socketx.svg?branch=master) ](https://travis-ci.org/obsidiandynamics/socketx#)
+[![codecov](https://codecov.io/gh/obsidiandynamics/socketx/branch/master/graph/badge.svg)](https://codecov.io/gh/obsidiandynamics/socketx)
 
 Socket.x is a library for building high-performance, distributed [WebSocket](https://en.wikipedia.org/wiki/WebSocket) applications. It provides a simple, consistent API for constructing both clients and servers, while giving you the flexibility to vary the underlying provider without changing your code.
 
