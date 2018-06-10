@@ -44,7 +44,7 @@ public final class FakeClient extends Thread implements Closeable {
     String line;
     while ((line = reader.readLine()) != null) {
       line = reader.readLine();
-      if (line.isEmpty()) break;
+      if (line == null || line.isEmpty()) break;
     }
     callback.connected();
     buffer = new byte[BUFFER_SIZE];

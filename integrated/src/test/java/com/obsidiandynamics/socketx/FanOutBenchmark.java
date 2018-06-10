@@ -265,7 +265,7 @@ public final class FanOutBenchmark implements TestSupport {
       if (overflow) {
         throttleInProgress.set(true);
         if (c.log.stages && ! logged) {
-          c.log.out.format("s: throttling", minTotalBacklog);
+          c.log.out.format("s: throttling");
           logged = true;
         }
         if (logged && ++waits % 1000 == 0) {
