@@ -1,6 +1,7 @@
 package com.obsidiandynamics.socketx;
 
-import static junit.framework.TestCase.*;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.*;
 
@@ -35,6 +36,6 @@ public final class XServerConfigTest {
   @Test
   public void testServlets() {
     final XMappedServlet[] servlets = new XMappedServlet[] { new XMappedServlet("/health", "health", HealthServlet.class) };
-    assertEquals(servlets, new XServerConfig().withServlets(servlets).servlets);
+    assertArrayEquals(servlets, new XServerConfig().withServlets(servlets).servlets);
   }
 }

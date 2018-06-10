@@ -110,7 +110,10 @@ public final class BinaryUtils {
    */
   public static byte[] randomBytes(int length) {
     final byte[] bytes = new byte[length];
-    new Random().nextBytes(bytes);
+    final SplittableRandom random = new SplittableRandom();
+    for (int i = 0; i < length; i++) {
+      bytes[i] = (byte) random.nextInt(256);
+    }
     return bytes;
   }
   
