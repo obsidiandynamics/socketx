@@ -148,7 +148,9 @@ public final class SocketUtils {
   
   /**
    *  Blocks the calling thread until the number of uses of the given port reaches or drops 
-   *  below {@code maxUseCount}, effectively draining the port of open connections. 
+   *  below {@code maxUseCount}, effectively draining the port of open connections.<p>
+   *  
+   *  This variant blocks indefinitely.
    *  
    *  @param port The port to drain.
    *  @param maxUseCount The maximum number of uses.
@@ -156,8 +158,24 @@ public final class SocketUtils {
    *  @throws InterruptedException If the thread was interrupted while draining.
    */
   public static void drainPort(int port, int maxUseCount, int drainIntervalMillis) throws InterruptedException {
+    drainPort(port, maxUseCount, drainIntervalMillis, Integer.MAX_VALUE);
+  }
+
+  /**
+   *  Blocks the calling thread until the number of uses of the given port reaches or drops 
+   *  below {@code maxUseCount}, or the timeout given by {@code timeoutMillis} elapses, 
+   *  effectively draining the port of open connections. 
+   *  
+   *  @param port The port to drain.
+   *  @param maxUseCount The maximum number of uses.
+   *  @param drainIntervalMillis Introduces waits between successive checks.
+   *  @param timeoutMillis The maximum allowable time for draining.
+   *  @return True if the port usage has been drained within the allowed time.
+   *  @throws InterruptedException If the thread was interrupted while draining.
+   */
+  public static boolean drainPort(int port, int maxUseCount, int drainIntervalMillis, int timeoutMillis) throws InterruptedException {
     final AtomicBoolean logged = new AtomicBoolean();
-    Await.bounded(Integer.MAX_VALUE, drainIntervalMillis, () -> {
+    return Await.bounded(timeoutMillis, drainIntervalMillis, () -> {
       final int useCount = getPortUseCount(port);
       if (useCount > maxUseCount && ! logged.get()) {
         logged.set(true);

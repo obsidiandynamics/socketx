@@ -84,7 +84,7 @@ public final class SocketUtilsTest {
     new Thread(() -> {
       try {
         barrier.await();
-        Thread.sleep(50);
+        Thread.sleep(100);
         closeSocket();
       } catch (Exception e) {
         e.printStackTrace();
@@ -92,9 +92,13 @@ public final class SocketUtilsTest {
     }).start();
     final int useCount = SocketUtils.getPortUseCount(port);
     assertTrue("useCount=" + useCount, useCount > 0);
+
+    SocketUtils.drainPort(port, 1, 1);      // with maxUseCount=1, this call shouldn't block
+    SocketUtils.drainPort(port, 0, 1, 100); // with a timeout, this call will block for a short while 
+    
     barrier.await();
-    SocketUtils.drainPort(port, 0, 1);
-    SocketUtils.drainPort(port, 0); // second call should do nothing
+    SocketUtils.drainPort(port, 0, 1);     // will block until the socket is closed
+    SocketUtils.drainPort(port, 0);        // this call should do nothing, as the port is already free
   }
   
   @Test
