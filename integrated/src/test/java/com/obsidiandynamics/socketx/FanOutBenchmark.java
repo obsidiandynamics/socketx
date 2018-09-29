@@ -350,7 +350,7 @@ public final class FanOutBenchmark implements TestSupport {
     }
 
     if (c.log.stages) c.log.out.format("s: awaiting server.connected\n");
-    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(c.m, server.connected.get()));
+    SocketUtils.await().scale(waitScale).until(() -> assertEquals(c.m, server.connected.get()));
     
     assertEquals(c.m, totalConnected(clients));
 
@@ -417,7 +417,7 @@ public final class FanOutBenchmark implements TestSupport {
     checkpoint = System.currentTimeMillis();
     if (c.log.stages) c.log.out.format("s: awaiting server.sent\n");
     final long expectedReceive = (long) c.m * c.n;
-    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, server.sent.get()));
+    SocketUtils.await().scale(waitScale).until(() -> assertEquals(expectedReceive, server.sent.get()));
     if (c.log.stages) c.log.out.format("s: took %,d ms\n", System.currentTimeMillis() - checkpoint);
 
     checkpoint = System.currentTimeMillis();
@@ -442,7 +442,7 @@ public final class FanOutBenchmark implements TestSupport {
     if (c.echo) {
       checkpoint = System.currentTimeMillis();
       if (c.log.stages) c.log.out.format("s: awaiting client.sent (echo mode was enabled)\n");
-      SocketUtils.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, totalSent(clients)));
+      SocketUtils.await().scale(waitScale).until(() -> assertEquals(expectedReceive, totalSent(clients)));
       if (c.log.stages) c.log.out.format("s: took %,d ms\n", System.currentTimeMillis() - checkpoint);
     } else {
       assertEquals(0, totalSent(clients));
@@ -451,7 +451,7 @@ public final class FanOutBenchmark implements TestSupport {
     if (c.echo) {
       checkpoint = System.currentTimeMillis();
       if (c.log.stages) c.log.out.format("s: awaiting server.received (echo mode was enabled)\n");
-      SocketUtils.await().withScale(waitScale).until(() -> assertEquals(expectedReceive, server.received.get()));
+      SocketUtils.await().scale(waitScale).until(() -> assertEquals(expectedReceive, server.received.get()));
       if (c.log.stages) c.log.out.format("s: took %,d ms\n", System.currentTimeMillis() - checkpoint);
     } else {
       assertEquals(0, server.received.get());
@@ -472,10 +472,10 @@ public final class FanOutBenchmark implements TestSupport {
     }
 
     if (c.log.stages) c.log.out.format("s: awaiting server.closed\n");
-    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(c.m, server.closed.get()));
+    SocketUtils.await().scale(waitScale).until(() -> assertEquals(c.m, server.closed.get()));
 
     if (c.log.stages) c.log.out.format("s: awaiting client.closed\n");
-    SocketUtils.await().withScale(waitScale).until(() -> assertEquals(c.m, totalClosed(clients)));
+    SocketUtils.await().scale(waitScale).until(() -> assertEquals(c.m, totalClosed(clients)));
 
     server.close();
     return summary;
