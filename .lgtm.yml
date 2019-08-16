@@ -6,3 +6,4 @@ extraction:
         ./gradlew -x test build --no-daemon --info
 queries:
   - include: "*"
+  - exclude: java/uncaught-number-format-exception
