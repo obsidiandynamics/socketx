@@ -1,0 +1,8 @@
+extraction:
+  java:
+    index:
+      java_version: "9"
+      build_command:
+        ./gradlew -x test build --no-daemon --info
+queries:
+  - include: "*"
