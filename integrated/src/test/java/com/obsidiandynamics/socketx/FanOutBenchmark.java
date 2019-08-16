@@ -19,6 +19,7 @@ import com.obsidiandynamics.socketx.ssl.*;
 import com.obsidiandynamics.socketx.undertow.*;
 import com.obsidiandynamics.socketx.util.*;
 import com.obsidiandynamics.socketx.util.URIBuilder.*;
+import com.obsidiandynamics.threads.*;
 
 /**
  *  Benchmarks message throughput in a server-initiated fan-out scenario, with optional
@@ -154,7 +155,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testNtUt() throws Exception {
+  public void testNtUt() throws Throwable {
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(NettyServer.factory());
@@ -165,7 +166,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testUtUt_noEcho_binary() throws Exception {
+  public void testUtUt_noEcho_binary() throws Throwable {
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
@@ -176,7 +177,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testUtUt_echo_binary() throws Exception {
+  public void testUtUt_echo_binary() throws Throwable {
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
@@ -187,7 +188,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testUtUt_noEcho_text() throws Exception {
+  public void testUtUt_noEcho_text() throws Throwable {
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
@@ -198,7 +199,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testUtUt_echo_text() throws Exception {
+  public void testUtUt_echo_text() throws Throwable {
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
@@ -209,7 +210,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testUtFc() throws Exception {
+  public void testUtFc() throws Throwable {
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
       clientHarnessFactory = fakeClientFactory(BYTES);
@@ -219,7 +220,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testJtJt() throws Exception {
+  public void testJtJt() throws Throwable {
     final XClient<?> client = createClient(JettyClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(JettyServer.factory());
@@ -230,7 +231,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testUtJt() throws Exception {
+  public void testUtJt() throws Throwable {
     final XClient<?> client = createClient(JettyClient.factory(),  IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(UndertowServer.factory());
@@ -241,7 +242,7 @@ public final class FanOutBenchmark implements TestSupport {
   }
   
   @Test
-  public void testJtUt() throws Exception {
+  public void testJtUt() throws Throwable {
     final XClient<?> client = createClient(UndertowClient.factory(), IDLE_TIMEOUT);
     new Config() {{
       serverHarnessFactory = serverHarnessFactory(JettyServer.factory());
@@ -385,7 +386,7 @@ public final class FanOutBenchmark implements TestSupport {
     final long timedRuns = c.n - c.warmupMessages;
     final long start = System.currentTimeMillis();
     if (c.log.stages) c.log.out.format("s: starting timed run...\n");
-    ParallelJob.blockingSlice(endpoints, sendThreads, sublist -> {
+    Parallel.blockingSlice(endpoints, sendThreads, sublist -> {
       long sent = 0;
       for (int i = 0; i < timedRuns; i++) {
         if (c.text) {

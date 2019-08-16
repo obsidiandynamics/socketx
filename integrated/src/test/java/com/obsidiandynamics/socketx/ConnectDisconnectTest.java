@@ -90,20 +90,20 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     test(ABRUPT, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
   }
 
-//  @Test
-//  public void testUtUtHttpsClientGracefulDisconnect() throws Exception {
-//    try {//TODO
-//      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
-//    } catch (Exception e) {
-//      System.err.println("TRAPPED");
-//      e.printStackTrace();
-//      throw e;
-//    }
-//  }
+  @Test
+  public void testUtUtHttpsClientGracefulDisconnect() throws Exception {
+    try {
+      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
+    } catch (Exception e) {
+      System.err.println("TRAPPED");
+      e.printStackTrace();
+      throw e;
+    }
+  }
 
   @Test
   public void testJtUtHttpsClientGracefulDisconnect() throws Exception {
-    try {//TODO
+    try {
       test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, JettyServer.factory(), UndertowClient.factory());
     } catch (Exception e) {
       System.err.println("TRAPPED");
@@ -111,17 +111,17 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       throw e;
     }
   }
-//  
-//  @Test
-//  public void testUtJtHttpsClientGracefulDisconnect() throws Exception {
-//    try {//TODO
-//      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), JettyClient.factory());
-//    } catch (Exception e) {
-//      System.err.println("TRAPPED");
-//      e.printStackTrace();
-//      throw e;
-//    }
-//  }
+  
+  @Test
+  public void testUtJtHttpsClientGracefulDisconnect() throws Exception {
+    try {
+      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), JettyClient.factory());
+    } catch (Exception e) {
+      System.err.println("TRAPPED");
+      e.printStackTrace();
+      throw e;
+    }
+  }
 
   @Test
   public void testNtUtClientGracefulDisconnect() throws Exception {
@@ -152,7 +152,6 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
                     XServerFactory<? extends XEndpoint> serverFactory,
                     XClientFactory<? extends XEndpoint> clientFactory) throws Exception {
     for (int cycle = 0; cycle < cycles; cycle++) {
-      System.out.println("cycle=" + cycle); //TODO
       if (cycle != 0) init();
       test(clean, connections, https, serverDisconnect, serverFactory, clientFactory);
       dispose();

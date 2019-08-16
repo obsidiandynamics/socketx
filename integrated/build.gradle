@@ -5,7 +5,8 @@ dependencies {
   testCompile project(":socketx-undertow")
   testCompile project(":socketx-jetty")
   testCompile project(":socketx-netty")
-  testCompile "org.apache.httpcomponents:httpclient:4.5.6"
+  testCompile "com.obsidiandynamics.fulcrum:fulcrum-threads:${fulcrumVersion}"
+  testCompile "org.apache.httpcomponents:httpclient:4.5.9"
 }
 
 jar {

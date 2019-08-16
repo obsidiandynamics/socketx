@@ -10,7 +10,7 @@ import java.util.*;
 import org.junit.*;
 import org.junit.rules.*;
 
-import com.obsidiandynamics.indigo.util.*;
+import com.obsidiandynamics.func.*;
 import com.obsidiandynamics.socketx.*;
 
 import io.netty.buffer.*;
