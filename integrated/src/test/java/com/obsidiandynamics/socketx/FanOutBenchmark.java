@@ -74,7 +74,7 @@ public final class FanOutBenchmark implements TestSupport {
     SpecMultiplier assignDefaults() {
       port = SocketUtils.getAvailablePort(PREFERRED_PORT);
       httpsPort = SocketUtils.getAvailablePort(PREFERRED_HTTPS_PORT);
-      https = false;
+      https = true;
       idleTimeout = IDLE_TIMEOUT;
       n = 100;
       m = 10;
@@ -128,9 +128,12 @@ public final class FanOutBenchmark implements TestSupport {
   private static ServerHarnessFactory serverHarnessFactory(XServerFactory<? extends XEndpoint> serverFactory) throws Exception {
     return (port_, progress, idleTimeout) -> new DefaultServerHarness(new XServerConfig() {{
       port = port_;
+      httpsPort = PREFERRED_HTTPS_PORT; //TODO make configurable via lambda params
       path = "/";
       idleTimeoutMillis = idleTimeout;
       attributes = getAttributes();
+      sslContextProvider = CompositeSSLContextProvider.getDevServerDefault();//TODO
+      System.out.println("port_=" + port_);
     }}, unsafeCast(serverFactory), progress);
   }
   

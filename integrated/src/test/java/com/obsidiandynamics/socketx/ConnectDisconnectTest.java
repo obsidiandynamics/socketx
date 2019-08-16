@@ -90,10 +90,38 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     test(ABRUPT, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
   }
 
+//  @Test
+//  public void testUtUtHttpsClientGracefulDisconnect() throws Exception {
+//    try {//TODO
+//      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
+//    } catch (Exception e) {
+//      System.err.println("TRAPPED");
+//      e.printStackTrace();
+//      throw e;
+//    }
+//  }
+
   @Test
-  public void testUtUtHttpsClientGracefulDisconnect() throws Exception {
-    test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), UndertowClient.factory());
+  public void testJtUtHttpsClientGracefulDisconnect() throws Exception {
+    try {//TODO
+      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, JettyServer.factory(), UndertowClient.factory());
+    } catch (Exception e) {
+      System.err.println("TRAPPED");
+      e.printStackTrace();
+      throw e;
+    }
   }
+//  
+//  @Test
+//  public void testUtJtHttpsClientGracefulDisconnect() throws Exception {
+//    try {//TODO
+//      test(GRACEFUL, CYCLES, CONNECTIONS, HTTPS, CLIENT_DISCONNECT, UndertowServer.factory(), JettyClient.factory());
+//    } catch (Exception e) {
+//      System.err.println("TRAPPED");
+//      e.printStackTrace();
+//      throw e;
+//    }
+//  }
 
   @Test
   public void testNtUtClientGracefulDisconnect() throws Exception {
@@ -114,6 +142,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
   public void testNtUtServerGracefulDisconnect() throws Exception {
     test(GRACEFUL, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
   }
+  
   @Test
   public void testNtUtServerAbruptDisconnect() throws Exception {
     test(ABRUPT, CYCLES, CONNECTIONS, HTTP, SERVER_DISCONNECT, NettyServer.factory(), UndertowClient.factory());
@@ -123,6 +152,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
                     XServerFactory<? extends XEndpoint> serverFactory,
                     XClientFactory<? extends XEndpoint> clientFactory) throws Exception {
     for (int cycle = 0; cycle < cycles; cycle++) {
+      System.out.println("cycle=" + cycle); //TODO
       if (cycle != 0) init();
       test(clean, connections, https, serverDisconnect, serverFactory, clientFactory);
       dispose();
@@ -144,26 +174,35 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       assertEquals("testServerContext", endpoint.getContext());
       return null;
     }).when(serverListener.mock).onConnect(notNull());
+    
+    System.out.println("creating server");//TODO
     createServer(serverFactory, serverConfig, serverListener.loggingListener);
     assertNotNull(server.getConfig());
 
     final XClientConfig clientConfig = getDefaultClientConfig()
         .withScanInterval(1)
-        .withSSLContextProvider(CompositeSSLContextProvider.getDevClientDefault());
+        .withSSLContextProvider(CompositeSSLContextProvider.getDevClientDefault());//TODO
+
+    System.out.println("creating client");//TODO
     createClient(clientFactory, clientConfig);
     assertNotNull(client.getConfig());
     final Slf4jMockListener clientListener = createSlf4jMockListener(log, "c: ");
     final List<XEndpoint> endpoints = new ArrayList<>(connections);
     
+
+    System.out.println("connecting endpoints");//TODO
     // connect all endpoints
     for (int i = 0; i < connections; i++) {
       final int port = https ? serverConfig.httpsPort : serverConfig.port;
+      System.out.println("port " + port);//TODO
       final XEndpoint endpoint = openClientEndpoint(https, port, clientListener.loggingListener);
+      System.out.println("endpoint " + endpoint);//TODO
       endpoint.setContext("testClientContext");
       assertEquals("testClientContext", endpoint.getContext());
       endpoints.add(endpoint);
     }
 
+    System.out.println("asserting connections");//TODO
     // assert connections on server
     SocketUtils.await().until(() -> {
       verify(clientListener.mock, times(connections)).onConnect(notNull());
@@ -173,6 +212,8 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
     final Collection<? extends XEndpoint> toDisconnect = serverDisconnect 
         ? server.getEndpointManager().getEndpoints() : endpoints;
 
+
+    System.out.println("disconnecting");//TODO
     // disconnect all endpoints and await closure
     for (XEndpoint endpoint : toDisconnect) {
       if (clean) {
@@ -183,14 +224,17 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
         endpoint.terminate(); // second terminate() should do no harm, and shouldn't call the handler a second time
       }
     }
-    
+
+    System.out.println("awaiting close");//TODO
     for (XEndpoint endpoint : toDisconnect) {
       endpoint.awaitClose(Integer.MAX_VALUE);
     }
-    
+
+    System.out.println("draining");//TODO
     server.drain();
     client.drain();
-    
+
+    System.out.println("asserting disconnections");//TODO
     // assert disconnections on server
     SocketUtils.await().until(() -> {
       verify(clientListener.mock, times(connections)).onClose(notNull());
@@ -199,6 +243,7 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       TestCase.assertEquals(0, server.getEndpointManager().getEndpoints().size());
     });
 
+    System.out.println("final assertions");//TODO
     for (XEndpoint endpoint : endpoints) {
       // the remote address should still exist, even though the endpoint has been closed
       assertNotNull(endpoint.getRemoteAddress());
@@ -206,7 +251,8 @@ public final class ConnectDisconnectTest extends BaseClientServerTest {
       // pinging a closed endpoint should do no harm
       endpoint.sendPing();
     }
-    
+
+    System.out.println("drain port");//TODO
     SocketUtils.drainPort(serverConfig.port, MAX_PORT_USE_COUNT);
   }
 }

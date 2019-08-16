@@ -3,7 +3,6 @@ os:
   - linux
 services:
 jdk:
-  - oraclejdk8
   - oraclejdk9
 install:
   - ./gradlew assemble --stacktrace --info
