@@ -53,6 +53,12 @@ allprojects {
     testRuntime "log4j:log4j:1.2.17"
   }
 
+  compileTestJava {
+    options.compilerArgs += "-proc:none"
+    options.compilerArgs += "-Xlint:unchecked"
+    options.compilerArgs += "-Xlint:deprecation"
+  }
+
   jacoco {
     toolVersion = "0.8.4"
   }

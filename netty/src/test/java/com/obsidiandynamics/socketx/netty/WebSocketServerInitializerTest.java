@@ -21,8 +21,6 @@ import io.netty.handler.timeout.*;
 import io.netty.util.*;
 
 public final class WebSocketServerInitializerTest {
-
-  
   private XEndpointScanner<NettyEndpoint> scanner;
   private NettyEndpoint endpoint;
   private NettyEndpointManager manager;
@@ -109,6 +107,7 @@ public final class WebSocketServerInitializerTest {
     }
 
     @Override
+    @Deprecated
     public T getAndRemove() {
       final T oldValue = this.value;
       this.value = null;
@@ -126,6 +125,7 @@ public final class WebSocketServerInitializerTest {
     }
 
     @Override
+    @Deprecated
     public void remove() {
       value = null;
     }

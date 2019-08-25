@@ -17,7 +17,6 @@ import io.undertow.server.*;
 import io.undertow.websockets.client.*;
 import io.undertow.websockets.client.WebSocketClient.*;
 import io.undertow.websockets.core.*;
-import io.undertow.websockets.jsr.*;
 
 public final class UndertowClient implements XClient<UndertowEndpoint> {
   private final XClientConfig config;
@@ -40,20 +39,14 @@ public final class UndertowClient implements XClient<UndertowEndpoint> {
 
     final ConnectionBuilder builder = WebSocketClient.connectionBuilder(worker, pool, uri);
     if (uri.getScheme().equals("wss")) {
-      System.out.println("Using SSL");//TODO
       final SSLContext sslContext = config.sslContextProvider.getSSLContext();
       final ByteBufferPool sslBufferPool = new DefaultByteBufferPool(directBuffers, 320 * 1024);
       final XnioSsl ssl = new UndertowXnioSsl(worker.getXnio(), OptionMap.EMPTY, sslBufferPool, sslContext);
       builder.setSsl(ssl);
-      
-//      final XnioSsl ssl = new DefaultWebSocketClientSslProvider().getSsl(worker, null, uri);
-//      builder.setSsl(ssl);
     }
 
 
-    System.out.println("Creating channel");//TODO
     final WebSocketChannel channel = builder.connect().get(); 
-    System.out.println("Creating client");//TODO
     return UndertowEndpoint.clientOf(scanner, channel, config, listener);
   }
 

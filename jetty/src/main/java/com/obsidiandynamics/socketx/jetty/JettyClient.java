@@ -54,7 +54,7 @@ public final class JettyClient implements XClient<JettyEndpoint> {
   }
   
   private static HttpClient createDefaultHttpClient(XClientConfig config) throws Exception {
-    final SslContextFactory sslContextFactory = new SslContextFactory();
+    final SslContextFactory sslContextFactory = new SslContextFactory.Client();
     sslContextFactory.setSslContext(config.sslContextProvider.getSSLContext());
     final HttpClient httpClient = new HttpClient(sslContextFactory);
     

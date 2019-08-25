@@ -66,7 +66,7 @@ public final class JettyServer implements XServer<JettyEndpoint> {
   }
   
   private static SslConnectionFactory getSSLConnectionFactory(SSLContext sslContext) {
-    final SslContextFactory sslContextFactory = new SslContextFactory();
+    final SslContextFactory sslContextFactory = new SslContextFactory.Server();
     sslContextFactory.setSslContext(sslContext);
     return new SslConnectionFactory(sslContextFactory,
                                     HttpVersion.HTTP_1_1.asString());
