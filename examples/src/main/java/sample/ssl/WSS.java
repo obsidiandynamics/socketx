@@ -7,6 +7,10 @@ import com.obsidiandynamics.socketx.ssl.*;
 import com.obsidiandynamics.socketx.undertow.*;
 
 public final class WSS {
+  private static final String TRUST_STORE_PASSWORD = "storepass";
+  private static final String KEY_STORE_PASSWORD = "keypass";
+  private static final String STORE_LOCATION = "cp://keystore-dev.jks";
+  
   public static void main(String[] args) throws Exception {
     final XServer<?> server = UndertowServer
         .factory()
@@ -16,12 +20,12 @@ public final class WSS {
                 .withHttpsPort(8443)
                 .withSSLContextProvider(new CompositeSSLContextProvider()
                                         .withKeyManagerProvider(new JKSKeyManagerProvider()
-                                                                .withLocation("cp://keystore-dev.jks")
-                                                                .withStorePassword("storepass")
-                                                                .withKeyPassword("keypass"))
+                                                                .withLocation(STORE_LOCATION)
+                                                                .withStorePassword(TRUST_STORE_PASSWORD)
+                                                                .withKeyPassword(KEY_STORE_PASSWORD))
                                         .withTrustManagerProvider(new JKSTrustManagerProvider()
-                                                                  .withLocation("cp://keystore-dev.jks")
-                                                                  .withStorePassword("storepass"))), 
+                                                                  .withLocation(STORE_LOCATION)
+                                                                  .withStorePassword(TRUST_STORE_PASSWORD))), 
                 new XEndpointLambdaListener<>()
                 .onConnect(System.out::println));
 
@@ -30,8 +34,8 @@ public final class WSS {
         .create(new XClientConfig()
                 .withSSLContextProvider(new CompositeSSLContextProvider()
                                         .withTrustManagerProvider(new JKSTrustManagerProvider()
-                                                                  .withLocation("cp://keystore-dev.jks")
-                                                                  .withStorePassword("storepass"))));
+                                                                  .withLocation(STORE_LOCATION)
+                                                                  .withStorePassword(TRUST_STORE_PASSWORD))));
 
     final XEndpoint clientEndpoint = client
         .connect(new URI("wss://localhost:8443/echo"),

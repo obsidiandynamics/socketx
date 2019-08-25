@@ -6,6 +6,10 @@ import com.obsidiandynamics.yconf.*;
 
 @Y
 public class CompositeSSLContextProvider implements SSLContextProvider {
+  private static final String DEF_STORE_LOCATION = "cp://keystore-dev.jks";
+  private static final String DEF_TRUSTSTORE_PASSWORD = "storepass";
+  private static final String DEF_KEYSTORE_PASSWORD = "keypass";
+  
   @YInject
   KeyManagerProvider keyManagerProvider = new NullKeyManagerProvider();
 
@@ -33,7 +37,7 @@ public class CompositeSSLContextProvider implements SSLContextProvider {
 
   @Override
   public final String toString() {
-    return "CompositeSSLContextProvider [keyManagerProvider: " + keyManagerProvider + ", trustManagerProvider: "
+    return CompositeSSLContextProvider.class.getSimpleName() + " [keyManagerProvider: " + keyManagerProvider + ", trustManagerProvider: "
         + trustManagerProvider + "]";
   }
 
@@ -48,12 +52,12 @@ public class CompositeSSLContextProvider implements SSLContextProvider {
   public static CompositeSSLContextProvider getDevServerDefault() {
     return new CompositeSSLContextProvider()
         .withKeyManagerProvider(new JKSKeyManagerProvider()
-                                .withLocation("cp://keystore-dev.jks")
-                                .withStorePassword("storepass")
-                                .withKeyPassword("keypass"))
+                                .withLocation(DEF_STORE_LOCATION)
+                                .withStorePassword(DEF_TRUSTSTORE_PASSWORD)
+                                .withKeyPassword(DEF_KEYSTORE_PASSWORD))
         .withTrustManagerProvider(new JKSTrustManagerProvider()
-                                  .withLocation("cp://keystore-dev.jks")
-                                  .withStorePassword("storepass"));
+                                  .withLocation(DEF_STORE_LOCATION)
+                                  .withStorePassword(DEF_TRUSTSTORE_PASSWORD));
   }
   
   /**

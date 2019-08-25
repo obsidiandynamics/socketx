@@ -127,7 +127,8 @@ public final class JettyEndpoint extends WebSocketAdapter implements XEndpoint, 
   public void flush() throws IOException {
     getRemote().flush();
   }
-  
+
+  @Override
   public void sendPing() {
     if (isOpen()) {
       try {

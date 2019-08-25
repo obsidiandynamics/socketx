@@ -25,7 +25,7 @@ public final class UndertowClient implements XClient<UndertowEndpoint> {
   
   private final XEndpointScanner<UndertowEndpoint> scanner;
   
-  private UndertowClient(XClientConfig config, XnioWorker worker, int bufferSize) {
+  private UndertowClient(XClientConfig config, XnioWorker worker) {
     this.config = config;
     this.worker = worker;
     scanner = new XEndpointScanner<>(config.scanIntervalMillis, 0);
@@ -69,9 +69,9 @@ public final class UndertowClient implements XClient<UndertowEndpoint> {
   }
   
   public static final class Factory implements XClientFactory<UndertowEndpoint> {
-    @Override public XClient<UndertowEndpoint> create(XClientConfig config) throws Exception {
-      final int bufferSize = UndertowAtts.BUFFER_SIZE.get(config.attributes);
-      return new UndertowClient(config, createXnioWorker(config), bufferSize);
+    @Override 
+    public XClient<UndertowEndpoint> create(XClientConfig config) throws Exception {
+      return new UndertowClient(config, createXnioWorker(config));
     }
   }
   
