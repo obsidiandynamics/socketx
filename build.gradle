@@ -86,12 +86,21 @@ subprojects {
   }
 }
 
-task jacocoRootReport(type: JacocoReport) {
-  dependsOn = allprojects.test
-  additionalSourceDirs = files(allprojects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
-  classDirectories = files(allprojects.sourceSets.main.output)
+task jacocoMerge(type: JacocoMerge) {
+  mustRunAfter = allprojects.test
   executionData = files(allprojects.jacocoTestReport.executionData)
+  doFirst {
+    executionData = files(files(allprojects.jacocoTestReport.executionData).findAll { it.exists() })
+  }
+}
+
+task jacocoRootReport(type: JacocoReport) {
+  dependsOn jacocoMerge
+  mustRunAfter = allprojects.test
+  additionalSourceDirs.from = files(allprojects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories.from = files(allprojects.sourceSets.main.allSource.srcDirs)
+  classDirectories.from = files(allprojects.sourceSets.main.output)
+  executionData jacocoMerge.destinationFile
   reports {
     html.enabled true
     xml.enabled true
@@ -99,11 +108,6 @@ task jacocoRootReport(type: JacocoReport) {
   }
   onlyIf = {
     true
-  }
-  doFirst {
-    executionData = files(executionData.findAll {
-      it.exists()
-    })
   }
   afterEvaluate {
     classDirectories = files(classDirectories.files.collect {
