@@ -49,7 +49,7 @@ publishing {
 
 def envUser = "BINTRAY_USER"
 def envKey = "BINTRAY_KEY"
-def packageDesc = "Combined tests"
+def packageDesc = "Jetty provider for Socket.x"
 def repoName = "socketx"
 bintray {
   user = System.getenv(envUser)
@@ -67,7 +67,7 @@ bintray {
     publicDownloadNumbers = true
     githubRepo = "obsidiandynamics/${repoName}"
     override = true
-    publish = false
+    publish = true
     version {
       name = project(":").version
       desc = packageDesc
