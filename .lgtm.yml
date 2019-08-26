@@ -7,3 +7,4 @@ extraction:
 queries:
   - include: "*"
   - exclude: java/uncaught-number-format-exception
+  - exclude: java/hardcoded-credential-api-call 
