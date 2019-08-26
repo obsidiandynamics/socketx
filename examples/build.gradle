@@ -65,7 +65,7 @@ bintray {
     publicDownloadNumbers = true
     githubRepo = "obsidiandynamics/${repoName}"
     override = true
-    publish = false
+    publish = true
     version {
       name = project(":").version
       desc = packageDesc
